@@ -6,6 +6,11 @@ Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/login/Login.vue")
+  },
+  {
     path: "/supplier",
     component: Empty,
     children: [
