@@ -6,7 +6,7 @@
     <!--    </div>-->
     <el-container style="height: 95vh;">
       <el-aside
-        v-if="this.$route.path != '/'"
+        v-if="this.$route.path !== '/'"
         width="200px"
         style="background-color: rgb(238, 241, 246)"
       >
@@ -23,7 +23,7 @@
       <el-container>
         <!--   头部   -->
         <el-header
-          v-if="this.$route.path != '/'"
+          v-if="this.$route.path !== '/'"
           style="text-align: right; font-size: 12px"
         >
           <el-dropdown>
