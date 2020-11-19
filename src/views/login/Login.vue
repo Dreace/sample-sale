@@ -33,53 +33,59 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "login",
-  data() {
-    return {
-      form: {
-        userName: "",
-        password: ""
-      },
-      rules: {
-        userName: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          {
-            min: 3,
-            max: 20,
-            message: "用户名长度在 3 到 20 个字符",
-            trigger: "blur"
-          }
-        ],
-        password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-          {
-            min: 3,
-            max: 20,
-            message: "密码长度在 3 到 20 个字符",
-            trigger: "blur"
-          }
-        ]
+<script lang="ts">
+import api from "@/utils/api";
+import Vue from "vue";
+import Component from "vue-class-component";
+
+interface FormValue {
+  userName: string;
+  password: string;
+}
+interface RulesCheck {
+  userName: Array<object>;
+  password: Array<object>;
+}
+@Component
+export default class Login extends Vue {
+  form: FormValue = { userName: "", password: "" };
+  rules: RulesCheck = {
+    userName: [
+      { required: true, message: "请输入用户名", trigger: "blur" },
+      {
+        min: 3,
+        max: 20,
+        message: "用户名长度在 3 到 20 个字符",
+        trigger: "blur"
       }
-    };
-  },
-  methods: {
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-    },
-    onSubmit: function(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          alert("submit!");
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    }
+    ],
+    password: [
+      { required: true, message: "请输入密码", trigger: "blur" },
+      {
+        min: 3,
+        max: 20,
+        message: "密码长度在 3 到 20 个字符",
+        trigger: "blur"
+      }
+    ]
+  };
+  resetForm(formName: string) {
+    const ref: any = this.$refs[formName];
+    ref.resetFields();
   }
-};
+  onSubmit(formName: string) {
+    //async
+    const ref: any = this.$refs[formName];
+    ref.validate((valid: any) => {
+      if (valid) {
+        alert("submit!");
+      } else {
+        console.log("error submit!!");
+        return false;
+      }
+    });
+  }
+}
 </script>
 
 <style scoped>
