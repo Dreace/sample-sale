@@ -1,9 +1,10 @@
 <template>
   <div class="login-container">
-    <div class="login-title">Fu*k他🐎的销售软件(待定)</div>
+    <div class="login-title">我啪就点进来了,很快啊!</div>
     <el-form
       :model="form"
       :rules="rules"
+      hide-required-asterisk="true"
       label-width="70px"
       class="el-form"
       ref="loginForm"
@@ -37,6 +38,7 @@
 import api from "@/utils/api";
 import Vue from "vue";
 import Component from "vue-class-component";
+import { ElForm } from "element-ui/types/form";
 
 interface FormValue {
   userName: string;
@@ -70,15 +72,25 @@ export default class Login extends Vue {
     ]
   };
   resetForm(formName: string) {
-    const ref: any = this.$refs[formName];
+    const ref: ElForm = this.$refs[formName] as ElForm;
     ref.resetFields();
   }
   onSubmit(formName: string) {
-    //async
-    const ref: any = this.$refs[formName];
-    ref.validate((valid: any) => {
+    const ref: ElForm = this.$refs[formName] as ElForm;
+    ref.validate(async (valid: boolean) => {
       if (valid) {
-        alert("submit!");
+        const res = await api.post("user/Login", {
+          name: this.form.userName,
+          password: this.form.password
+        });
+        if (res.data.errno === 0) {
+          //若登陆成功则跳转页面
+          this.$router.push({ path: "stock" }); //暂定stock页面
+          localStorage.setItem("user_token", res.data);
+        } else {
+          //若失败则提示登陆失败
+          this.$message.error("登陆失败");
+        }
       } else {
         console.log("error submit!!");
         return false;
@@ -109,7 +121,7 @@ export default class Login extends Vue {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
   background-color: white;
   padding: 10px;
-  max-width: 500px;
+  max-width: 450px;
   margin: 150px auto 0;
 }
 </style>
