@@ -86,7 +86,7 @@ export default class Login extends Vue {
         if (res !== null) {
           //若登陆成功则跳转页面
           await this.$router.push({ path: "stock" }); //暂定stock页面
-          localStorage.setItem("user_token", res.data);
+          localStorage.setItem("access_token", res.data);
         }
       } else {
         console.log("error submit!");
