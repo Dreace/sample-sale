@@ -1,6 +1,6 @@
 <template>
   <div>
-    交易详情
+    sadsadasd
   </div>
 </template>
 

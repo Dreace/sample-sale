@@ -20,6 +20,24 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
+    path: "/customer",
+    component: Empty,
+    children: [
+      {
+        path: "productinfo",
+        component: () => import("../views/customer/productinfo.vue")
+      },
+      {
+        path: "shopcart",
+        component: () => import("../views/customer/shopcart.vue")
+      },
+      {
+        path: "tradeInfo",
+        component: () => import("../views/customer/tradeInfo.vue")
+      }
+    ]
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting

@@ -4,15 +4,23 @@
     <!--      <router-link to="/">Home</router-link> |-->
     <!--      <router-link to="/about">About</router-link>-->
     <!--    </div>-->
-    <el-container style="height: 95vh;">
+    <el-container id="supplier" style="height: 95vh;">
       <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
         <el-menu router :default-openeds="['1']">
           <el-submenu index="1">
-            <template slot="title"
-              ><i class="el-icon-message"></i>供货商
+            <template slot="title">
+              <i class="el-icon-message"></i>供货商
             </template>
             <el-menu-item index="/supplier/stock">库存管理</el-menu-item>
             <el-menu-item index="/supplier/trade">交易清单</el-menu-item>
+          </el-submenu>
+          <el-submenu index="2">
+            <template slot="title">
+              <i class="el-icon-message"></i>客户
+            </template>
+            <el-menu-item index="/customer/productinfo">商品信息</el-menu-item>
+            <el-menu-item index="/customer/shopcart">购物车</el-menu-item>
+            <el-menu-item index="/customer/tradeInfo">交易信息</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
