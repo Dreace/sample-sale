@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://sale-api.dreace.top/",
+  baseURL: "http://127.0.0.1:10001/", //https://sale-api.dreace.top/
   responseType: "json",
   withCredentials: true
 });
