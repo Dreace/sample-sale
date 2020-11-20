@@ -83,16 +83,13 @@ export default class Login extends Vue {
           name: this.form.userName,
           password: this.form.password
         });
-        if (res.data.errno === 0) {
+        if (res !== null) {
           //若登陆成功则跳转页面
-          this.$router.push({ path: "stock" }); //暂定stock页面
+          await this.$router.push({ path: "stock" }); //暂定stock页面
           localStorage.setItem("user_token", res.data);
-        } else {
-          //若失败则提示登陆失败
-          this.$message.error("登陆失败");
         }
       } else {
-        console.log("error submit!!");
+        console.log("error submit!");
         return false;
       }
     });

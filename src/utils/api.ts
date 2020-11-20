@@ -16,7 +16,7 @@ api.interceptors.request.use(
   config => {
     //在发送请求前添加token(第一次登陆请求传送空字符)
     const headers = {
-      Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`
+      Authorization: `Bearer ${localStorage.getItem("user_token") || ""}`
     };
     return config;
   },
