@@ -4,7 +4,7 @@
     <el-form
       :model="form"
       :rules="rules"
-      hide-required-asterisk="true"
+      hide-required-asterisk
       label-width="70px"
       class="el-form"
       ref="loginForm"
@@ -79,7 +79,7 @@ export default class Login extends Vue {
     const ref: ElForm = this.$refs[formName] as ElForm;
     ref.validate(async (valid: boolean) => {
       if (valid) {
-        const res = await api.post("user/Login", {
+        const res = await api.post("/login", {
           name: this.form.userName,
           password: this.form.password
         });
