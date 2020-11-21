@@ -80,7 +80,7 @@ export default class Login extends Vue {
     ref.validate(async (valid: boolean) => {
       if (valid) {
         const res = await api.post("/login", {
-          name: this.form.userName,
+          username: this.form.userName,
           password: this.form.password
         });
         if (res !== null) {
