@@ -48,6 +48,10 @@ interface RulesCheck {
   userName: Array<object>;
   password: Array<object>;
 }
+interface ResCheck {
+  competence: number;
+  access_token: string;
+}
 @Component
 export default class Login extends Vue {
   form: FormValue = { userName: "", password: "" };
@@ -85,7 +89,21 @@ export default class Login extends Vue {
         });
         if (res !== null) {
           //若登陆成功则跳转页面
-          await this.$router.push({ path: "stock" }); //暂定stock页面
+          /*
+          switch (res.data.competence) {
+            case 0: //供货商
+              await this.$router.push({ path: "stock" }); //stock页面
+              break;
+            case 1: //代理商
+              //await this.$router.push({ path: "stock" }); //stock页面
+              break;
+            case 2: //客户
+              //await this.$router.push({ path: "stock" }); //stock页面
+              break;
+          }
+          */
+          await this.$router.push({ path: "stock" }); //stock页面
+          console.log(res);
           localStorage.setItem("access_token", res.data);
         }
       } else {
