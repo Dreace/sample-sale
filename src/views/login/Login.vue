@@ -197,7 +197,7 @@ export default class Login extends Vue {
   validatePassword = (
     rule: RegisteredRulesCheck,
     value: string,
-    callback: any
+    callback: (error: Error | void) => void
   ) => {
     if (value !== this.registeredForm.password) {
       callback(new Error());
@@ -208,7 +208,7 @@ export default class Login extends Vue {
   validateKeyPassword = (
     rule: RegisteredRulesCheck,
     value: string,
-    callback: any
+    callback: (error: Error | void) => void
   ) => {
     if (value !== this.registeredForm.keyPassword) {
       callback(new Error());
