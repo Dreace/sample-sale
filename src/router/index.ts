@@ -20,6 +20,16 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
+    path: "/agent",
+    component: Empty,
+    children: [
+      {
+        path: "purchase",
+        component: () => import("@/views/agent/Purchase.vue")
+      }
+    ]
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting
