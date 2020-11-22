@@ -43,6 +43,7 @@
         >
           <el-form-item prop="competence">
             <el-select
+              class="selectRole"
               v-model="registeredForm.competence"
               placeholder="用户身份"
             >
@@ -337,6 +338,9 @@ export default class Login extends Vue {
 .tabs {
   width: 90%;
   margin: 0 auto;
+}
+.selectRole {
+  width: 100%;
 }
 .loginButton {
   width: 100%;
