@@ -25,12 +25,14 @@
               prefix-icon="el-icon-lock"
             />
           </el-form-item>
-          <el-button
-            class="loginButton"
-            type="primary"
-            @click="submitLogin('loginForm')"
-            >登录</el-button
-          >
+          <el-form-item>
+            <el-button
+              class="loginButton"
+              type="primary"
+              @click="submitLogin('loginForm')"
+              >登录</el-button
+            >
+          </el-form-item>
         </el-form>
       </el-tab-pane>
       <el-tab-pane name="RegisterTab" label="注册">
@@ -113,7 +115,7 @@
           <el-button
             class="registerButton"
             type="primary"
-            @click="submitregister('registerForm')"
+            @click="submitRegister('registerForm')"
             >注册</el-button
           >
         </el-form>
@@ -296,16 +298,15 @@ export default class Login extends Vue {
         })) as UserInformation;
         if (res !== null) {
           //若登陆成功则跳转页面
-          console.log(res.competence);
           switch (res.competence) {
             case 0: //供货商
               await this.$router.push({ path: "stock" }); //stock页面
               break;
             case 1: //代理商
-              //await this.$router.push({ path: "stock" }); //stock页面
+              await this.$router.push({ path: "stock" }); //stock页面
               break;
             case 2: //客户
-              //await this.$router.push({ path: "stock" }); //stock页面
+              await this.$router.push({ path: "stock" }); //stock页面
               break;
           }
           localStorage.setItem("access_token", res.access_token);
@@ -316,7 +317,7 @@ export default class Login extends Vue {
       }
     });
   }
-  submitregister(formName: string) {
+  submitRegister(formName: string) {
     const ref: ElForm = this.$refs[formName] as ElForm;
     ref.validate(async (valid: boolean) => {
       if (valid) {
