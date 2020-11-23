@@ -22,6 +22,12 @@
             <el-menu-item index="/customer/shopcart">购物车</el-menu-item>
             <el-menu-item index="/customer/tradeInfo">交易信息</el-menu-item>
           </el-submenu>
+          <el-submenu index="3">
+            <template slot="title">
+              <i class="el-icon-message"></i>商品
+            </template>
+            <el-menu-item index="/trace/trace">商品追溯</el-menu-item>
+          </el-submenu>
         </el-menu>
       </el-aside>
       <el-container>

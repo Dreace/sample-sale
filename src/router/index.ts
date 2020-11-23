@@ -38,6 +38,16 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
+    path: "/trace",
+    component: Empty,
+    children: [
+      {
+        path: "trace",
+        component: () => import("../views/trace/trace.vue")
+      }
+    ]
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting
