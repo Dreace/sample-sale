@@ -14,8 +14,8 @@ const routes: Array<RouteConfig> = [
         component: () => import("../views/supplier/Stock.vue")
       },
       {
-        path: "trade",
-        component: () => import("../views/supplier/Trade.vue")
+        path: "order",
+        component: () => import("../views/supplier/Order.vue")
       }
     ]
   },
