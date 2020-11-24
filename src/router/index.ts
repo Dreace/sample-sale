@@ -28,10 +28,6 @@ const routes: Array<RouteConfig> = [
         component: () => import("../views/customer/productinfo.vue")
       },
       {
-        path: "shopcart",
-        component: () => import("../views/customer/shopcart.vue")
-      },
-      {
         path: "tradeInfo",
         component: () => import("../views/customer/tradeInfo.vue")
       },

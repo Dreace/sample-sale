@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>订单管理</h1>
     <!-- 表格 -->
     <div id="trade">
       <el-table
@@ -10,7 +11,8 @@
           )
         "
         style="width: 100%"
-        ><el-table-column label="订单编号" prop="tradeID"></el-table-column>
+      >
+        <el-table-column label="订单编号" prop="tradeID"></el-table-column>
         <el-table-column label="收款方" prop="shopName"> </el-table-column>
         <el-table-column label="收款金额" prop="tradePrice"> </el-table-column>
         <el-table-column label="订单时间" prop="tradeDate"> </el-table-column>
@@ -36,12 +38,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- eslint-disable-next-line -->
-      <template slot-scope="scope">
-        <el-button size="mini" @click="Download">下 载</el-button>
-        <el-button size="mini" @click="dialogVisible = true">查 看</el-button>
-        <el-button size="mini" type="danger" @click="Delete()">删 除</el-button>
-      </template>
       <template>
         <el-dialog
           class="order_dialog"
@@ -52,7 +48,6 @@
             <customerOrder></customerOrder>
           </span>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="dialogVisible = false"
               >确 定</el-button
             >
@@ -92,10 +87,10 @@ export default {
   },
   methods: {
     Download() {
-      alert("fuck10");
+      alert("下载中");
     },
     Delete() {
-      alert("fuck6");
+      alert("删除失败");
     },
     SearchWord() {
       alert(this.inoput2);
