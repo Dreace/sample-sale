@@ -26,7 +26,6 @@
               <i class="el-icon-message"></i>客户
             </template>
             <el-menu-item index="/customer/productinfo">商品信息</el-menu-item>
-            <el-menu-item index="/customer/shopcart">购物车</el-menu-item>
             <el-menu-item index="/customer/tradeInfo">交易信息</el-menu-item>
           </el-submenu>
         </el-menu>
