@@ -52,7 +52,7 @@
         "
         style="width: 100%"
         @selection-change="handleSelectionChange"
-        >>
+      >
         <el-table-column label="商品 ID" prop="stockId"></el-table-column>
         <el-table-column label="商品名称" prop="goodsName"></el-table-column>
         <el-table-column label="库存" prop="surplus"></el-table-column>
@@ -62,7 +62,7 @@
             <el-button type="primary" @click="AddCart(scope.$index, scope.row)"
               >加入购物车</el-button
             >
-            <el-button @click="FindInfo(scope.$index, scope.rows)"
+            <el-button @click="FindInfo(scope.$index, scope.row)"
               >查看详情</el-button
             >
           </template>
@@ -89,17 +89,18 @@
             <el-form-item label="商品名称：">
               <span>{{ stockInfoform.goodsName }}</span>
             </el-form-item>
-            <el-form-item label="生产日期：">
-              <span>{{ stockInfoform.productDate }}</span>
-            </el-form-item>
+
             <el-form-item label="库存：">
               <span>{{ stockInfoform.surplus }}</span>
             </el-form-item>
             <el-form-item label="供货商：">
-              <span>{{ stockInfoform.supplier }}</span>
+              <span>{{ stockInfoform.supplierId }}</span>
             </el-form-item>
             <el-form-item label="价格：">
               <span>{{ stockInfoform.price }}</span>
+            </el-form-item>
+            <el-form-item label="生产日期：">
+              <span>{{ stockInfoform.modifytime }}</span>
             </el-form-item>
             <el-row>
               <el-form-item label="描述：">
@@ -222,6 +223,15 @@ interface AddCartValue {
   total: number;
   quantity: number;
 }
+interface StockInfoValue {
+  stockID: number;
+  goodsName: string;
+  modifytime: number;
+  parameters: string;
+  surplus: number;
+  price: number;
+  supplierId: number;
+}
 
 @Component
 export default class Product extends Vue {
@@ -240,33 +250,34 @@ export default class Product extends Vue {
     price: 0,
     quantity: 0,
     total: 0,
-    stockId: -1,
+    stockId: 0,
     goodsName: ""
   };
-  stockInfoform = {
-    stockID: "",
+  stockInfoform: StockInfoValue = {
+    stockID: 0,
     goodsName: "",
-    productDate: "",
+    modifytime: 0,
     parameters: "",
-    surplus: "",
-    price: "",
-    supplier: "",
-    sign: ""
+    surplus: 0,
+    price: 0,
+    supplierId: 0
   };
 
-  FindInfo(index: number, row: TableVale) {
+  async FindInfo(index: number, row: TableVale) {
     this.dialogFindStockVisible = true;
+    const res = (await api.post("customer/stockInfo", row)) as StockInfoValue;
+    if (res !== null) {
+      this.stockInfoform.stockID = res.stockID;
+      this.stockInfoform.goodsName = res.goodsName;
+      this.stockInfoform.modifytime = res.modifytime;
+      this.stockInfoform.parameters = res.parameters;
+      this.stockInfoform.price = res.price;
+      this.stockInfoform.supplierId = res.supplierId;
+      this.stockInfoform.surplus = res.surplus;
+    }
   }
   async Buy() {
-    const res = await api.post("customer/customerOrder", this.cartItems);
-    if (res) {
-      this.$message({
-        message: "下单成功",
-        type: "success"
-      });
-    } else {
-      this.$message.error("下单失败，库存不足！");
-    }
+    await api.post("customer/customerOrder", this.cartItems);
     this.dialogFindCartVisible = false;
   }
   AddCart(index: number, row: TableVale) {
@@ -319,13 +330,13 @@ export default class Product extends Vue {
   }
 
   async SearchStock() {
-    this.tableData = (await api.post("customer/productinfo", {
+    this.tableData = (await api.post("customer/search", {
       select: this.searchSelect,
       search: this.search
     })) as TableVale[];
   }
   async refreshProduct() {
-    this.tableData = (await api.get("customer/productinfo")) as TableVale[];
+    this.tableData = (await api.get("customer/stocks")) as TableVale[];
     this.pagetotal = this.tableData.length;
   }
 
