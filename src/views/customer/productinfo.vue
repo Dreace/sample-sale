@@ -14,7 +14,7 @@
           <el-button
             v-on:click="refreshProduct"
             style="width: 100px;text-align: center"
-            >刷 新</el-button
+            >重 置</el-button
           >
         </el-col>
         <el-col :span="18">
@@ -242,7 +242,7 @@ export default class Product extends Vue {
   currentPage1 = 1;
   pagetotal = 1;
   search = "";
-  searchSelect = "";
+  searchSelect = "1";
   dialogFindStockVisible = false;
   dialogFindCartVisible = false;
   dialogAddVisible = false;
@@ -277,8 +277,17 @@ export default class Product extends Vue {
     }
   }
   async Buy() {
-    await api.post("customer/customerOrder", this.cartItems);
+    const res = await api.post("customer/customerOrder", this.cartItems);
+    if (res != null) {
+      this.$message({
+        type: "success",
+        message: "下单成功!"
+      });
+    }
     this.dialogFindCartVisible = false;
+    for (let i = 0; i < this.cartItems.length; i++) {
+      this.cartItems.pop();
+    }
   }
   AddCart(index: number, row: TableVale) {
     this.dialogAddVisible = true;
@@ -338,6 +347,7 @@ export default class Product extends Vue {
   async refreshProduct() {
     this.tableData = (await api.get("customer/stocks")) as TableVale[];
     this.pagetotal = this.tableData.length;
+    this.search = "";
   }
 
   mounted() {
