@@ -326,9 +326,10 @@ export default class Login extends Vue {
           password: this.registerForm.password,
           email: this.registerForm.email,
           competence: this.registerForm.competence,
-          keypassword: this.registerForm.keyPassword
+          keyPassword: this.registerForm.keyPassword
         });
         if (res !== null) {
+          localStorage.setItem("encryptedPrivateKey", res.data); //将已加密的私钥储存在本地
           this.activeTabName = "LoginTab"; //跳转回登陆页面
           this.loginForm.userName = this.registerForm.userName;
           this.loginForm.password = this.registerForm.password;
