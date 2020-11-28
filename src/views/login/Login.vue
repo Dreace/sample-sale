@@ -129,7 +129,7 @@ import api from "@/utils/api";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { ElForm } from "element-ui/types/form";
-
+import FileSaver, { saveAs } from "file-saver";
 interface LoginFormValue {
   userName: string;
   password: string;
@@ -163,6 +163,9 @@ interface UserInformation {
   email: string;
   competence: number;
   access_token: string;
+}
+interface EncryptedPrivateKey {
+  encryptedPrivateKey: string;
 }
 @Component
 export default class Login extends Vue {
@@ -321,18 +324,21 @@ export default class Login extends Vue {
     const ref: ElForm = this.$refs[formName] as ElForm;
     ref.validate(async (valid: boolean) => {
       if (valid) {
-        const res = await api.post("user/register", {
+        const res = (await api.post("user/register", {
           name: this.registerForm.userName,
           password: this.registerForm.password,
           email: this.registerForm.email,
           competence: this.registerForm.competence,
           keyPassword: this.registerForm.keyPassword
-        });
+        })) as EncryptedPrivateKey;
         if (res !== null) {
-          localStorage.setItem("encryptedPrivateKey", res.data); //将已加密的私钥储存在本地
           this.activeTabName = "LoginTab"; //跳转回登陆页面
           this.loginForm.userName = this.registerForm.userName;
           this.loginForm.password = this.registerForm.password;
+          const file = new File([res.encryptedPrivateKey], "PriavetKey.pem", {
+            type: "text/plain;charset=utf-8"
+          });
+          FileSaver.saveAs(file); //将已加密的私钥储存在本地
         }
       } else {
         console.log("error submit!");
