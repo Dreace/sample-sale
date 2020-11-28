@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@types/file-saver": "^2.0.1",
     "@types/openpgp": "^4.4.14",
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
