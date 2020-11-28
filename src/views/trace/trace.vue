@@ -67,7 +67,7 @@ export default class Trace extends Vue {
   };
 
   async Check() {
-    const res = (await api.post("trace/Trace", {
+    const res = (await api.post("trace/trace", {
       goodsID: this.goodsID
     })) as FormValue;
     if (res !== null) {
