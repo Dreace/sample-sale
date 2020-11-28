@@ -42,6 +42,10 @@ const routes: Array<RouteConfig> = [
           {
             path: "purchase",
             component: () => import("@/views/agent/Purchase.vue")
+          },
+          {
+            path: "order",
+            component: () => import("@/views/agent/Order.vue")
           }
         ]
       },

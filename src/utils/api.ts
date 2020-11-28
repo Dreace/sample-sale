@@ -10,6 +10,7 @@ const api = axios.create({
 
 api.interceptors.response.use(response => {
   if (response.data.code === 0) {
+    console.log(response.data.data);
     return response.data.data;
   } else {
     Message.error(response.data.message);
