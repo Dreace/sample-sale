@@ -19,7 +19,7 @@
               ><i class="el-icon-message"></i>代理商
             </template>
             <el-menu-item index="/agent/purchase">进货</el-menu-item>
-            <el-menu-item index="/supplier/trade">交易清单</el-menu-item>
+            <el-menu-item index="/agent/agentOrder">交易清单</el-menu-item>
           </el-submenu>
           <el-submenu index="3">
             <template slot="title">

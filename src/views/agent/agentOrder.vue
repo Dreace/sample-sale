@@ -23,6 +23,8 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
+          <!-- eslint-disable-next-line -->
+          <!-- eslint-disable-next-line -->
           <template slot-scope="scope">
             <el-button size="mini" @click="Download(scope.$index, scope.row)"
               >下 载</el-button
@@ -30,6 +32,7 @@
             <el-button
               size="mini"
               @click="
+                // FindOrder(scope.$index, scope.row);
                 dialogOrderVisible = true;
                 getOrderGoods(scope.$index, scope.row);
               "
@@ -106,10 +109,7 @@
             <el-button
               type="primary"
               @click="customerSignVisible = true"
-              :disabled="
-                this.OrderInfo.customerSign !== null ||
-                  this.OrderInfo.agentSign === null
-              "
+              :disabled="this.OrderInfo.agentSign !== null"
               >签 名</el-button
             >
           </span>
@@ -225,10 +225,10 @@ export default class Order extends Vue {
   privateKey: key.Key | null = null;
   currentOrder: OrderInfoValue | null = null;
   allSignVerified = false;
+
   readPrivateKey(event: Event) {
     const fileReader = new FileReader();
     fileReader.onload = async () => {
-      // eslint-disable-next-line no-undef
       this.privateKey = (await key.readArmored(fileReader.result)).keys[0];
     };
     const files = (event.target as HTMLInputElement).files;
@@ -239,7 +239,6 @@ export default class Order extends Vue {
 
   async Download(index: number, row: OrderInfoValue) {
     console.log(row);
-
     alert("download");
   }
 
@@ -303,7 +302,7 @@ export default class Order extends Vue {
             })
           ).signature;
           await api.post(
-            `customer/ordersCustomer/${this.currentOrder.orderID}/sign`,
+            `customer/ordersAgent/${this.currentOrder.orderID}/sign`,
             {
               sign: signature
             }
