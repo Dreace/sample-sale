@@ -4,9 +4,13 @@
     <!--      <router-link to="/">Home</router-link> |-->
     <!--      <router-link to="/about">About</router-link>-->
     <!--    </div>-->
-    <el-container id="supplier" style="height: 95vh">
-      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-        <el-menu router :default-openeds="['1', '2']">
+    <el-container style="height: 95vh;">
+      <el-aside
+        v-if="this.$route.path !== '/'"
+        width="200px"
+        style="background-color: rgb(238, 241, 246)"
+      >
+        <el-menu router :default-openeds="['1']">
           <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-message"></i>供货商
@@ -33,7 +37,10 @@
       </el-aside>
       <el-container>
         <!--   头部   -->
-        <el-header style="text-align: right; font-size: 12px">
+        <el-header
+          v-if="this.$route.path !== '/'"
+          style="text-align: right; font-size: 12px"
+        >
           <el-dropdown>
             <i class="el-icon-setting" style="margin-right: 15px"></i>
             <el-dropdown-menu slot="dropdown">
