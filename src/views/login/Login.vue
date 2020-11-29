@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <div class="login-title">我啪就点进来了,很快啊!</div>
+    <div class="login-title">代理销售软件</div>
     <el-tabs v-model="activeTabName" class="tabs" :stretch="true">
       <el-tab-pane name="LoginTab" label="登陆">
         <el-form
@@ -49,9 +49,9 @@
               v-model="registerForm.competence"
               placeholder="用户身份"
             >
-              <el-option label="客户" :value="0"></el-option>
+              <el-option label="客户" :value="2"></el-option>
               <el-option label="代理商" :value="1"></el-option>
-              <el-option label="供货商" :value="2"></el-option>
+              <el-option label="供货商" :value="0"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item prop="userName">
@@ -129,7 +129,7 @@ import api from "@/utils/api";
 import Vue from "vue";
 import Component from "vue-class-component";
 import { ElForm } from "element-ui/types/form";
-import FileSaver, { saveAs } from "file-saver";
+import FileSaver from "file-saver";
 interface LoginFormValue {
   userName: string;
   password: string;
@@ -222,6 +222,18 @@ export default class Login extends Vue {
       callback();
     }
   };
+  validateEmail = (
+    rule: RegisterRulesCheck,
+    value: string,
+    callback: (error: Error | void) => void
+  ) => {
+    const emailRules = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+    if (!emailRules.test(value)) {
+      callback(new Error("请输入正确的邮箱格式"));
+    } else {
+      callback();
+    }
+  };
   registerRules: RegisterRulesCheck = {
     competence: [
       { required: true, message: "请选择用户身份", trigger: "blur" }
@@ -284,9 +296,10 @@ export default class Login extends Vue {
     email: [
       { required: true, message: "请输入邮箱", trigger: "blur" },
       {
+        validator: this.validateEmail,
         min: 3,
         max: 20,
-        message: "密码长度在 3 到 20 个字符",
+        message: "请输入正确邮箱格式",
         trigger: "blur"
       }
     ]
@@ -301,15 +314,19 @@ export default class Login extends Vue {
         })) as UserInformation;
         if (res !== null) {
           //若登陆成功则跳转页面
+          sessionStorage.setItem("competence", res.competence.toString());
           switch (res.competence) {
             case 0: //供货商
-              await this.$router.push({ path: "stock" }); //stock页面
+              await this.$router.push({ path: "/supplier/stock" });
+              console.log(this.$route.path);
               break;
             case 1: //代理商
-              await this.$router.push({ path: "stock" }); //stock页面
+              await this.$router.push({ path: "/agent/purchase" });
+              console.log(this.$route.path);
               break;
             case 2: //客户
-              await this.$router.push({ path: "stock" }); //stock页面
+              await this.$router.push({ path: "/customer/productinfo" });
+              console.log(this.$route.path);
               break;
           }
           localStorage.setItem("access_token", res.access_token);
@@ -339,6 +356,11 @@ export default class Login extends Vue {
             type: "text/plain;charset=utf-8"
           });
           FileSaver.saveAs(file); //将已加密的私钥储存在本地
+          this.$message({
+            showClose: true,
+            message: "私钥已下载到本地",
+            type: "success"
+          });
         }
       } else {
         console.log("error submit!");

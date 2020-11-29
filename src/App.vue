@@ -10,22 +10,41 @@
         width="200px"
         style="background-color: rgb(238, 241, 246)"
       >
-        <el-menu router :default-openeds="['1']">
-          <el-submenu index="1">
+        <el-menu router :default-openeds="['1', '2', '3']">
+          <el-submenu
+            index="1"
+            v-if="
+              this.$route.path === '/supplier/stock' ||
+                this.$route.path === '/supplier/order'
+            "
+          >
             <template slot="title">
               <i class="el-icon-message"></i>供货商
             </template>
             <el-menu-item index="/supplier/stock">库存管理</el-menu-item>
             <el-menu-item index="/supplier/order">交易清单</el-menu-item>
           </el-submenu>
-          <el-submenu index="2">
+          <el-submenu
+            index="2"
+            v-if="
+              this.$route.path === '/agent/purchase' ||
+                this.$route.path === '/supplier/trade'
+            "
+          >
             <template slot="title"
               ><i class="el-icon-message"></i>代理商
             </template>
             <el-menu-item index="/agent/purchase">进货</el-menu-item>
             <el-menu-item index="/supplier/trade">交易清单</el-menu-item>
           </el-submenu>
-          <el-submenu index="3">
+          <el-submenu
+            index="3"
+            v-if="
+              this.$route.path === '/customer/productinfo' ||
+                this.$route.path === '/customer/shopcart' ||
+                this.$route.path === '/customer/tradeInfo'
+            "
+          >
             <template slot="title">
               <i class="el-icon-message"></i>客户
             </template>
@@ -59,5 +78,4 @@
     </el-container>
   </div>
 </template>
-
 <style lang="scss"></style>
