@@ -10,7 +10,7 @@
         width="200px"
         style="background-color: rgb(238, 241, 246)"
       >
-        <el-menu router :default-openeds="['1']">
+        <el-menu router :default-openeds="['1', '2', '3']">
           <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-message"></i>供货商
@@ -23,7 +23,7 @@
               ><i class="el-icon-message"></i>代理商
             </template>
             <el-menu-item index="/agent/purchase">进货</el-menu-item>
-            <el-menu-item index="/supplier/trade">交易清单</el-menu-item>
+            <el-menu-item index="/agent/order">交易清单</el-menu-item>
           </el-submenu>
           <el-submenu index="3">
             <template slot="title">

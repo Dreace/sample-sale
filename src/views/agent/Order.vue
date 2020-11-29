@@ -18,10 +18,10 @@
             已完成
           </el-tag>
           <el-tag v-else-if="scope.row.supplierSign">
-            已签名
+            供货商已确认
           </el-tag>
           <el-tag type="warning" v-else>
-            未签名
+            供货商未签名
           </el-tag>
         </template>
       </el-table-column>
@@ -30,7 +30,7 @@
           <el-button
             type="primary"
             size="mini"
-            :disabled="scope.row.supplierSign"
+            :disabled="!scope.row.supplierSign || !!scope.row.agentSign"
             v-on:click="
               currentOrder = scope.row;
               getOrderGoods();
@@ -92,6 +92,12 @@
         <span>代理商：{{ currentOrder.agentId }}</span>
         <el-divider direction="vertical"></el-divider>
         <span>附加协议：{{ currentOrder.additional }}</span>
+        <el-divider direction="vertical"></el-divider>
+
+        <el-tag type="success" size="mini" v-if="currentOrder.signValid"
+          >供货商签名校验成功</el-tag
+        >
+        <el-tag type="warning" size="mini" v-else>供货商签名校验失败</el-tag>
       </div>
       <el-table :data="agentOrderGoods" show-summary :summary-method="summary">
         <el-table-column prop="goodsName" label="名称"></el-table-column>
@@ -101,22 +107,14 @@
           </template>
         </el-table-column>
         <el-table-column prop="price" label="加个"></el-table-column>
-        <el-table-column prop="signValid" label="签名校验">
-          <template slot-scope="scope">
-            <el-tag v-if="scope.row.signValid">
-              通过
-            </el-tag>
-            <el-tag v-else type="warning"> 签名不匹配</el-tag>
-          </template>
-        </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false">取 消</el-button>
         <el-button
           type="primary"
           @click="signDialogVisible = true"
-          :disabled="allSignVerified !== true"
-          >确认签名
+          :disabled="!currentOrder || !currentOrder.signValid"
+          >确认下单
         </el-button>
       </div>
     </el-dialog>
@@ -134,11 +132,13 @@ import { GoodsValue } from "@/views/supplier/Stock.vue";
 interface AgentOrderValue {
   orderId: number;
   supplierId: number;
+  supplierPublicKey: string;
   agentId: number;
   supplierSign?: string;
   agentSign?: string;
   createTime: number;
   additional: string;
+  signValid?: boolean;
 }
 
 interface SignForm {
@@ -151,7 +151,6 @@ export default class Order extends Vue {
   orderDialogVisible = false;
   currentOrder: AgentOrderValue | null = null;
   agentOrderGoods: GoodsValue[] = [];
-  allSignVerified = false;
   signDialogVisible = false;
   privateKey: key.Key | null = null;
   signForm: SignForm = {
@@ -159,7 +158,7 @@ export default class Order extends Vue {
   };
 
   async refreshAgentOrders() {
-    this.agentOrders = await api.get("supplier/orders");
+    this.agentOrders = await api.get("agent/orders");
   }
 
   readPrivateKey(event: Event) {
@@ -201,7 +200,7 @@ export default class Order extends Vue {
             goodsSign.push(item.sign);
           });
           const orderInformation = {
-            additional: this.currentOrder.additional,
+            additional: "无",
             agentId: this.currentOrder.agentId,
             createTime: this.currentOrder.createTime,
             orderId: this.currentOrder.orderId,
@@ -215,7 +214,7 @@ export default class Order extends Vue {
               detached: true
             })
           ).signature;
-          await api.post(`supplier/orders/${this.currentOrder.orderId}/sign`, {
+          await api.post(`agent/orders/${this.currentOrder.orderId}/sign`, {
             sign: signature
           });
           await this.refreshAgentOrders();
@@ -231,68 +230,44 @@ export default class Order extends Vue {
       const agentOrderGoods: GoodsValue[] = await api.get(
         `supplier/orders/${this.currentOrder.orderId}`
       );
-      // this.signCheckResult = Array(this.agentOrderGoods.length);
-      for (const goods of agentOrderGoods) {
-        await this.checkSign(goods);
+      if (this.currentOrder) {
+        const goodsSign: string[] = [];
+        agentOrderGoods.forEach(item => {
+          goodsSign.push(item.sign);
+        });
+        const orderInformation = {
+          additional: this.currentOrder.additional,
+          agentId: this.currentOrder.agentId,
+          createTime: this.currentOrder.createTime,
+          orderId: this.currentOrder.orderId,
+          supplierId: this.currentOrder.supplierId,
+          signs: goodsSign
+        };
+        console.log(JSON.stringify(orderInformation));
+        this.currentOrder.signValid = (
+          await verify({
+            message: cleartext.fromText(JSON.stringify(orderInformation)), // CleartextMessage or Message object
+            signature: await signature.readArmored(
+              this.currentOrder.supplierSign
+            ), // parse detached signature
+            publicKeys: (
+              await key.readArmored(this.currentOrder.supplierPublicKey)
+            ).keys // for verification
+          })
+        ).signatures[0].valid;
       }
       this.agentOrderGoods = agentOrderGoods;
       this.orderDialogVisible = true;
-      let signValid = true;
-      agentOrderGoods.forEach(
-        goods => (signValid = signValid && !!goods.signValid)
-      );
-      this.allSignVerified = signValid;
     }
-  }
-
-  async checkSign(row: GoodsValue) {
-    const goods: GoodsValue = {
-      stockId: row.stockId,
-      goodsId: row.goodsId,
-      productionDate: row.productionDate,
-      parameters: row.parameters,
-      price: row.price,
-      sign: ""
-    };
-    row.signValid = (
-      await verify({
-        message: cleartext.fromText(JSON.stringify(goods)), // CleartextMessage or Message object
-        signature: await signature.readArmored(row.sign), // parse detached signature
-        publicKeys: (
-          await key.readArmored(
-            "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
-              "\n" +
-              "mQENBF+4sKsBCACiaavtsCSp6A5inAdk4PnlbE8Rr7Onhp2wn+razP4SWIcFlHbc\n" +
-              "DcIXf/+b9gVWWxPEy15kJ4XIUhktC5EElrUQii38qwH6ws4t5ELSX16xqCKIkx8M\n" +
-              "+OQKD/2o2FTYPM6DS58uUWTqYoSwaLxpYuarsvRR1yZtbkLWmiunCdaO8DmGKFBE\n" +
-              "pd4jcKvZlujyl8wqZ6Yz45B3+KY+rDKK980RO5OZWQDT++pYXIvlqXm7+7WCPwAk\n" +
-              "oaXs4pwfiLZZ5jdW8hbBgLyyIQmWdDLURG7Wp1O2K5e6wCVSMP7N7jTUXHDmfN5o\n" +
-              "+2RTe9i0dhQgE3HuUTTqGnwkdDUM2SxYM4uxABEBAAG0InRlc3QgKHNpbXBsZS1z\n" +
-              "YWxlKSA8ZnVja0BudWMuc2hpdD6JAU4EEwEIADgWIQRz7nzBtIm/nMMiGu/uaCQQ\n" +
-              "VTA10QUCX7iwqwIbLwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRDuaCQQVTA1\n" +
-              "0dWpB/9Vc1OK9zfwtRznNLIZJgVOpm/17uuVDgqvxNSsgw4Zemtd3KXmTPagYyED\n" +
-              "nmjxa6I8Kgy6pZcHz4x6FNMhDERIFuqSIAaHUcw6JYkccPzmSbBCvjHg8Itl4Ztr\n" +
-              "1i/jpRjVp7Air+AnrgLAKoAp+KT1j7cKhu68nwbhX464IblHHDbudCxg1za1FXre\n" +
-              "wTNqi/Pn4QXBbtZSJUu7/hhAJE5IjWnYELbSU06bbypT4UpaxnzRsP6BYSeF3id7\n" +
-              "6Q5TUWsbplwXPwXY0wbo0y5xdV8T9Ml45CXi34hgWI3VALyFkckdK3mv32o7K4jp\n" +
-              "1vSTQByZ0JZUQJLAaeOVj0HFcwF7\n" +
-              "=C0bL\n" +
-              "-----END PGP PUBLIC KEY BLOCK-----"
-          )
-        ).keys // for verification
-      })
-    ).signatures[0].valid;
   }
 
   summary(): Array<string | number> {
-    const sums: Array<string | number> = ["合计"];
-    let quantity = 0,
-      total = 0;
+    const sums: Array<string | number> = ["合计", ""];
+    let total = 0;
     for (const item of this.agentOrderGoods) {
-      quantity += 1;
       total += item.price;
     }
-    sums.push(quantity, total);
+    sums.push(total);
     return sums;
   }
 
