@@ -28,7 +28,7 @@
             index="2"
             v-if="
               this.$route.path === '/agent/purchase' ||
-                this.$route.path === '/supplier/trade'
+                this.$route.path === '/agent/order'
             "
           >
             <template slot="title"
