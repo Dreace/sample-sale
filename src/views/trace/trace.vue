@@ -18,9 +18,6 @@
                 >查询</el-button
               ></el-col
             >
-            <el-col :span="4"
-              ><el-button type="warn" @click="Check()">校验</el-button></el-col
-            >
           </el-row>
         </el-form-item>
         <el-form-item label="存储编号 :">
@@ -31,6 +28,9 @@
         </el-form-item>
         <el-form-item label="商品名字 :">
           <span>{{ traceInfoForm.goodsName }}</span>
+        </el-form-item>
+        <el-form-item label="商品参数 :">
+          <span>{{ traceInfoForm.parameters }}</span>
         </el-form-item>
         <el-form-item label="生产日期 :">
           <span>{{ traceInfoForm.productionDate }}</span>
@@ -76,15 +76,8 @@ export default class Trace extends Vue {
     sign: "",
     goodsName: "",
     supplierId: "",
-    parameters: ""
-  };
-  goods: GoodsValue = {
-    stockId: this.traceInfoForm.stockId,
-    goodsId: this.goodsId,
-    sign: this.traceInfoForm.sign,
-    price: this.traceInfoForm.price,
-    productionDate: this.traceInfoForm.productionDate,
-    parameters: this.traceInfoForm.parameters
+    parameters: "",
+    check: true
   };
   async Check() {
     const res = (await api.post("trace/trace", {
@@ -118,7 +111,8 @@ export default class Trace extends Vue {
       productionDate: row.productionDate,
       parameters: row.parameters,
       price: row.price,
-      sign: ""
+      sign: "",
+      signValid: this.traceInfoForm.check
     };
     console.log(goods);
     row.signValid = (
