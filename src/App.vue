@@ -1,74 +1,81 @@
 <template>
-  <div id="app">  
-    <div class="head">
-      <div class="col-xs-10 head-title">
-        <span v-if="getRoomInfo != null" >当前房间名称：{{getRoomInfo.name}}</span>
-      </div>
-      <div class="col-xs-2 head-toolbar">
-        <button class="btn btn-primary" v-on:click="loginOut" >登出</button>
-      </div>
-    </div>
-    <div class="cont">
-      <HChat></HChat>
-      <Login></Login>
-    </div>
+  <div id="app">
+    <!--    <div id="nav">-->
+    <!--      <router-link to="/">Home</router-link> |-->
+    <!--      <router-link to="/about">About</router-link>-->
+    <!--    </div>-->
+    <el-container style="height: 95vh;">
+      <el-aside
+        v-if="this.$route.path !== '/'"
+        width="200px"
+        style="background-color: rgb(238, 241, 246)"
+      >
+        <el-menu router :default-openeds="['1', '2', '3']">
+          <el-submenu
+            index="1"
+            v-if="
+              this.$route.path === '/supplier/stock' ||
+                this.$route.path === '/supplier/order'
+            "
+          >
+            <template slot="title">
+              <i class="el-icon-message"></i>供货商
+            </template>
+            <el-menu-item index="/supplier/stock">库存管理</el-menu-item>
+            <el-menu-item index="/supplier/order">交易清单</el-menu-item>
+          </el-submenu>
+          <el-submenu
+            index="2"
+            v-if="
+              this.$route.path === '/agent/purchase' ||
+                this.$route.path === '/supplier/trade'
+            "
+          >
+            <template slot="title"
+              ><i class="el-icon-message"></i>代理商
+            </template>
+            <el-menu-item index="/agent/purchase">进货</el-menu-item>
+            <el-menu-item index="/supplier/trade">交易清单</el-menu-item>
+          </el-submenu>
+          <el-submenu
+            index="3"
+            v-if="
+              this.$route.path === '/customer/productinfo' ||
+                this.$route.path === '/customer/shopcart' ||
+                this.$route.path === '/customer/tradeInfo'
+            "
+          >
+            <template slot="title">
+              <i class="el-icon-message"></i>客户
+            </template>
+            <el-menu-item index="/customer/productinfo">商品信息</el-menu-item>
+            <el-menu-item index="/customer/shopcart">购物车</el-menu-item>
+            <el-menu-item index="/customer/tradeInfo">交易信息</el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+      <el-container>
+        <!--   头部   -->
+        <el-header
+          v-if="this.$route.path !== '/'"
+          style="text-align: right; font-size: 12px"
+        >
+          <el-dropdown>
+            <i class="el-icon-setting" style="margin-right: 15px"></i>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>查看</el-dropdown-item>
+              <el-dropdown-item>新增</el-dropdown-item>
+              <el-dropdown-item>删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <span>王小虎</span>
+        </el-header>
+        <!--      主体-->
+        <el-main>
+          <router-view></router-view>
+        </el-main>
+      </el-container>
+    </el-container>
   </div>
 </template>
-
-<script>
-import { mapGetters } from 'vuex'
-import { Keys } from './uitls'
-import HChat from './components/HChat'
-import Login from './components/Login'
-import { getBusCxt } from './store'
-
-let currRoom = Keys.GETROOMINFO
-
-export default {
-  name: 'app',
-  components: {
-    HChat,
-    Login
-  },
-  computed: {
-    ...mapGetters([currRoom])
-  },
-  methods: {
-    loginOut: function () {
-      getBusCxt().userCxt.closeConn()
-      window.close()
-    }
-  }
-}
-</script>
-
-<style lang="scss" >
-  $head-height: 40px;
-
-html, body, #app, .cont{
-  height: 100%;
-}
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-.head{
-  height: $head-height;  
-  text-align: left;
-  background: -webkit-linear-gradient( left top,#20A0FF,#58B7FF);
-}
-.cont{
-  margin-top: -$head-height;
-  padding-top: $head-height;
-}
-.head-title{
-  padding: 10px;
-}
-.head-toolbar{
-  padding-top: 5px;
-  text-align: right;
-}
-</style>
+<style lang="scss"></style>
