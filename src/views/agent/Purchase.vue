@@ -90,9 +90,7 @@
 <script lang="ts">
 import api from "@/utils/api";
 import Vue from "vue";
-import { sign, cleartext, key } from "openpgp";
 import Component from "vue-class-component";
-import Key = key.Key;
 import { ElForm } from "element-ui/types/form";
 import { SupplierStockValue } from "@/views/supplier/Stock.vue";
 

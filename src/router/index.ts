@@ -6,6 +6,10 @@ Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
+    path: "/",
+    component: () => import("../views/login/Login.vue")
+  },
+  {
     path: "/supplier",
     component: Empty,
     children: [
@@ -14,8 +18,8 @@ const routes: Array<RouteConfig> = [
         component: () => import("../views/supplier/Stock.vue")
       },
       {
-        path: "trade",
-        component: () => import("../views/supplier/Trade.vue")
+        path: "order",
+        component: () => import("../views/supplier/Order.vue")
       }
     ]
   },
@@ -42,6 +46,10 @@ const routes: Array<RouteConfig> = [
           {
             path: "agentOrder",
             component: () => import("@/views/agent/agentOrder.vue")
+          },
+          {
+            path: "order",
+            component: () => import("@/views/agent/Order.vue")
           }
         ]
       },

@@ -1,8 +1,8 @@
 <template>
   <div>
     <el-button type="primary" v-on:click="addStockDialogVisible = true"
-      >新建商品</el-button
-    >
+      >新建商品
+    </el-button>
     <el-button v-on:click="refreshSupplierStock">刷新</el-button>
     <!--    <el-input v-model="input" v-on:input="reverse"></el-input>-->
     <!--    <p>{{ reversed }}</p>-->
@@ -102,7 +102,11 @@
           ></el-input-number>
         </el-form-item>
         <el-form-item label="私钥" required>
-          <input type="file" accept=".pem" @change="readPrivateKey($event)" />
+          <input
+            type="file"
+            accept=".pem,.asc"
+            @change="readPrivateKey($event)"
+          />
           <div v-if="privateKey">
             {{ privateKey.getUserIds()[0] }}
           </div>
@@ -138,10 +142,10 @@
 <script lang="ts">
 import api from "@/utils/api";
 import Vue from "vue";
-import { sign, cleartext, key } from "openpgp";
+import { cleartext, key, sign } from "openpgp";
 import Component from "vue-class-component";
-import Key = key.Key;
 import { ElForm } from "element-ui/types/form";
+import Key = key.Key;
 
 export interface SupplierStockValue {
   stockId: number;
@@ -165,6 +169,17 @@ interface StockFormValue {
   goodsName: string;
   parameters: string;
   price: string;
+}
+
+export interface GoodsValue {
+  goodsName?: string;
+  stockId: number;
+  goodsId: string;
+  productionDate: number;
+  parameters: string;
+  price: number;
+  sign: string;
+  signValid?: boolean;
 }
 
 @Component
@@ -240,36 +255,30 @@ export default class Stock extends Vue {
             }
           );
           if (confirmState === "confirm") {
-            const signed = [];
+            const signedGoods: GoodsValue[] = [];
             for (const id of ids) {
-              const preSign = {
+              const goods: GoodsValue = {
                 stockId: this.currentStock.stockId,
                 goodsId: id,
-                productionDate: Date.now(),
+                productionDate: parseInt((Date.now() / 1000).toFixed()),
                 parameters: this.currentStock.parameters,
                 price: this.currentStock.price,
                 sign: ""
               };
-              const data = (
+              console.log(JSON.stringify(goods));
+              goods["sign"] = (
                 await sign({
-                  message: cleartext.fromText(JSON.stringify(preSign)), // CleartextMessage or Message object
-                  privateKeys: [this.privateKey] // for signing
+                  message: cleartext.fromText(JSON.stringify(goods)), // CleartextMessage or Message object
+                  privateKeys: [this.privateKey], // for signing
+                  detached: true
                 })
-              ).data;
-              const temp = data.split("\n");
-              const tempArray: string[] = [];
-              for (let i = temp.length - 3; i >= 0; i--) {
-                if (temp[i] === "\r") {
-                  break;
-                }
-                tempArray.push(temp[i]);
-              }
-              preSign["sign"] = tempArray.reverse().join("\n");
-              signed.push(preSign);
+              ).signature;
+              console.log(goods);
+              signedGoods.push(goods);
             }
             const count = await api.put(
               `supplier/stocks/${this.currentStock.stockId}`,
-              signed
+              signedGoods
             );
             if (count) {
               this.$message({
