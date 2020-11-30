@@ -59,10 +59,13 @@
         <el-table-column label="商品价格" prop="price"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="primary" @click="AddCart(scope.$index, scope.row)"
+            <el-button
+              size="mini"
+              type="primary"
+              @click="AddCart(scope.$index, scope.row)"
               >加入购物车</el-button
             >
-            <el-button @click="FindInfo(scope.$index, scope.row)"
+            <el-button size="mini" @click="FindInfo(scope.$index, scope.row)"
               >查看详情</el-button
             >
           </template>
@@ -94,12 +97,12 @@
               <span>{{ stockInfoform.surplus }}</span>
             </el-form-item>
             <el-form-item label="供货商：">
-              <span>{{ stockInfoform.supplierId }}</span>
+              <span>{{ stockInfoform.agentID }}</span>
             </el-form-item>
             <el-form-item label="价格：">
               <span>{{ stockInfoform.price }}</span>
             </el-form-item>
-            <el-form-item label="生产日期：">
+            <el-form-item label="修改日期：">
               <span>{{ stockInfoform.modifytime }}</span>
             </el-form-item>
             <el-row>
@@ -230,7 +233,7 @@ interface StockInfoValue {
   parameters: string;
   surplus: number;
   price: number;
-  supplierId: number;
+  agentID: number;
 }
 
 @Component
@@ -260,7 +263,7 @@ export default class Product extends Vue {
     parameters: "",
     surplus: 0,
     price: 0,
-    supplierId: 0
+    agentID: 0
   };
 
   async FindInfo(index: number, row: TableVale) {
@@ -272,7 +275,7 @@ export default class Product extends Vue {
       this.stockInfoform.modifytime = res.modifytime;
       this.stockInfoform.parameters = res.parameters;
       this.stockInfoform.price = res.price;
-      this.stockInfoform.supplierId = res.supplierId;
+      this.stockInfoform.agentID = res.agentID;
       this.stockInfoform.surplus = res.surplus;
     }
   }

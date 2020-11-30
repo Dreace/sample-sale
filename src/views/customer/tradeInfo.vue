@@ -90,12 +90,17 @@
           </el-form>
           <template>
             <el-table :data="OrdertableData" style="width: 99.9%">
-              <el-table-column prop="goods_id" label="货物编号">
+              <el-table-column prop="goodsId" label="货物编号">
               </el-table-column>
               <el-table-column prop="goodsName" label="商品名称">
               </el-table-column>
               <el-table-column prop="stockId" label="商品ID"> </el-table-column>
-              <el-table-column prop="production_date" label="生产日期">
+              <el-table-column prop="productionDate" label="生产日期">
+                <template slot-scope="scope">
+                  {{
+                    new Date(scope.row.productionDate * 1000).toLocaleString()
+                  }}
+                </template>
               </el-table-column>
             </el-table>
           </template>
@@ -176,6 +181,7 @@ import { ElForm } from "element-ui/types/form";
 import Vue from "vue";
 import api from "@/utils/api";
 import { verify, cleartext, signature, key, sign } from "openpgp";
+import FileSaver from "file-saver";
 
 interface SignFormValue {
   password: string;
@@ -199,7 +205,21 @@ interface GoodsValue {
   sign: string;
   signValid?: boolean;
 }
-
+interface DownloadValue {
+  agentID: number;
+  customerID: number;
+  orderID: number;
+  orderTime: number;
+  stockId: number;
+  goodsId: number;
+  goodsName: string;
+  parameters: string;
+  price: number;
+  productionDate: number;
+  sign: string;
+  customerSign: string;
+  agentSign: string;
+}
 @Component
 export default class Order extends Vue {
   tableData: OrderInfoValue[] = [];
@@ -225,6 +245,7 @@ export default class Order extends Vue {
   privateKey: key.Key | null = null;
   currentOrder: OrderInfoValue | null = null;
   allSignVerified = false;
+
   readPrivateKey(event: Event) {
     const fileReader = new FileReader();
     fileReader.onload = async () => {
@@ -238,9 +259,13 @@ export default class Order extends Vue {
   }
 
   async Download(index: number, row: OrderInfoValue) {
-    console.log(row);
-
-    alert("download");
+    const OrderGoods = (await api.get(
+      `customer/orderDownload/${row.orderID}`
+    )) as DownloadValue;
+    const file = new File([JSON.stringify(OrderGoods, null, 5)], "hello.txt", {
+      type: "application/json,charset=UTF-8"
+    });
+    FileSaver.saveAs(file);
   }
 
   handleCurrentChange(page: number) {
@@ -288,11 +313,10 @@ export default class Order extends Vue {
             goodsSign.push(item.sign);
           });
           const orderInformation = {
-            additional: "无",
             customerId: this.currentOrder.customerID,
             orderTime: this.currentOrder.orderDate,
             orderId: this.currentOrder.orderID,
-            agentIDId: this.currentOrder.agentID,
+            agentID: this.currentOrder.agentID,
             signs: goodsSign
           };
           const signature = (
@@ -308,6 +332,14 @@ export default class Order extends Vue {
               sign: signature
             }
           );
+          const filename =
+            "Customer_Order" +
+            this.currentOrder.orderID +
+            "'s_Customer_Sign.pem";
+          const file = new File([signature], filename, {
+            type: "text/plain;charset=utf-8"
+          });
+          FileSaver.saveAs(file);
           await this.RefreshOrder();
           this.customerSignVisible = false;
           this.dialogOrderVisible = false;

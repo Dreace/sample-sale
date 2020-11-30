@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>订单管理</h1>
+    <h1>客户订单管理</h1>
     <!-- 表格 -->
     <div id="trade">
       <el-table :data="tableData" style="width: 100%">
@@ -93,12 +93,17 @@
           </el-form>
           <template>
             <el-table :data="OrdertableData" style="width: 99.9%">
-              <el-table-column prop="goods_id" label="货物编号">
+              <el-table-column prop="goodsId" label="货物编号">
               </el-table-column>
               <el-table-column prop="goodsName" label="商品名称">
               </el-table-column>
               <el-table-column prop="stockId" label="商品ID"> </el-table-column>
-              <el-table-column prop="production_date" label="生产日期">
+              <el-table-column prop="productionDate" label="生产日期">
+                <template slot-scope="scope">
+                  {{
+                    new Date(scope.row.productionDate * 1000).toLocaleString()
+                  }}
+                </template>
               </el-table-column>
             </el-table>
           </template>
@@ -176,6 +181,7 @@ import { ElForm } from "element-ui/types/form";
 import Vue from "vue";
 import api from "@/utils/api";
 import { verify, cleartext, signature, key, sign } from "openpgp";
+import FileSaver from "file-saver";
 
 interface SignFormValue {
   password: string;
@@ -238,7 +244,6 @@ export default class Order extends Vue {
   }
 
   async Download(index: number, row: OrderInfoValue) {
-    console.log(row);
     alert("download");
   }
 
@@ -307,6 +312,12 @@ export default class Order extends Vue {
               sign: signature
             }
           );
+          const filename =
+            "Customer_Order" + this.currentOrder.orderID + "'s_Agent_Sign.pem";
+          const file = new File([signature], filename, {
+            type: "text/plain;charset=utf-8"
+          });
+          FileSaver.saveAs(file);
           await this.RefreshOrder();
           this.customerSignVisible = false;
           this.dialogOrderVisible = false;
