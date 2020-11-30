@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>订单管理</h1>
+    <h1>客户订单管理</h1>
     <!-- 表格 -->
     <div id="trade">
       <el-table :data="tableData" style="width: 100%">
@@ -23,6 +23,8 @@
           </template>
         </el-table-column>
         <el-table-column label="操作">
+          <!-- eslint-disable-next-line -->
+          <!-- eslint-disable-next-line -->
           <template slot-scope="scope">
             <el-button size="mini" @click="Download(scope.$index, scope.row)"
               >下 载</el-button
@@ -30,6 +32,7 @@
             <el-button
               size="mini"
               @click="
+                // FindOrder(scope.$index, scope.row);
                 dialogOrderVisible = true;
                 getOrderGoods(scope.$index, scope.row);
               "
@@ -111,10 +114,7 @@
             <el-button
               type="primary"
               @click="customerSignVisible = true"
-              :disabled="
-                this.OrderInfo.customerSign !== null ||
-                  this.OrderInfo.agentSign === null
-              "
+              :disabled="this.OrderInfo.agentSign !== null"
               >签 名</el-button
             >
           </span>
@@ -205,21 +205,7 @@ interface GoodsValue {
   sign: string;
   signValid?: boolean;
 }
-interface DownloadValue {
-  agentID: number;
-  customerID: number;
-  orderID: number;
-  orderTime: number;
-  stockId: number;
-  goodsId: number;
-  goodsName: string;
-  parameters: string;
-  price: number;
-  productionDate: number;
-  sign: string;
-  customerSign: string;
-  agentSign: string;
-}
+
 @Component
 export default class Order extends Vue {
   tableData: OrderInfoValue[] = [];
@@ -249,7 +235,6 @@ export default class Order extends Vue {
   readPrivateKey(event: Event) {
     const fileReader = new FileReader();
     fileReader.onload = async () => {
-      // eslint-disable-next-line no-undef
       this.privateKey = (await key.readArmored(fileReader.result)).keys[0];
     };
     const files = (event.target as HTMLInputElement).files;
@@ -259,13 +244,7 @@ export default class Order extends Vue {
   }
 
   async Download(index: number, row: OrderInfoValue) {
-    const OrderGoods = (await api.get(
-      `customer/orderDownload/${row.orderID}`
-    )) as DownloadValue;
-    const file = new File([JSON.stringify(OrderGoods, null, 5)], "hello.txt", {
-      type: "application/json,charset=UTF-8"
-    });
-    FileSaver.saveAs(file);
+    alert("download");
   }
 
   handleCurrentChange(page: number) {
@@ -313,10 +292,11 @@ export default class Order extends Vue {
             goodsSign.push(item.sign);
           });
           const orderInformation = {
+            additional: "无",
             customerId: this.currentOrder.customerID,
             orderTime: this.currentOrder.orderDate,
             orderId: this.currentOrder.orderID,
-            agentID: this.currentOrder.agentID,
+            agentIDId: this.currentOrder.agentID,
             signs: goodsSign
           };
           const signature = (
@@ -327,15 +307,13 @@ export default class Order extends Vue {
             })
           ).signature;
           await api.post(
-            `customer/ordersCustomer/${this.currentOrder.orderID}/sign`,
+            `customer/ordersAgent/${this.currentOrder.orderID}/sign`,
             {
               sign: signature
             }
           );
           const filename =
-            "Customer_Order" +
-            this.currentOrder.orderID +
-            "'s_Customer_Sign.pem";
+            "Customer_Order" + this.currentOrder.orderID + "'s_Agent_Sign.pem";
           const file = new File([signature], filename, {
             type: "text/plain;charset=utf-8"
           });

@@ -28,6 +28,7 @@
             index="2"
             v-if="
               this.$route.path === '/agent/purchase' ||
+                this.$route.path === '/agent/agentOrder' ||
                 this.$route.path === '/agent/order'
             "
           >
@@ -35,13 +36,13 @@
               ><i class="el-icon-message"></i>代理商
             </template>
             <el-menu-item index="/agent/purchase">进货</el-menu-item>
+            <el-menu-item index="/agent/agentOrder">客户订单管理</el-menu-item>
             <el-menu-item index="/agent/order">交易清单</el-menu-item>
           </el-submenu>
           <el-submenu
             index="3"
             v-if="
               this.$route.path === '/customer/productinfo' ||
-                this.$route.path === '/customer/shopcart' ||
                 this.$route.path === '/customer/tradeInfo'
             "
           >
@@ -49,7 +50,6 @@
               <i class="el-icon-message"></i>客户
             </template>
             <el-menu-item index="/customer/productinfo">商品信息</el-menu-item>
-            <el-menu-item index="/customer/shopcart">购物车</el-menu-item>
             <el-menu-item index="/customer/tradeInfo">交易信息</el-menu-item>
           </el-submenu>
         </el-menu>
@@ -62,7 +62,7 @@
         >
           <el-dropdown>
             <i class="el-icon-setting" style="margin-right: 15px"></i>
-            <el-dropdown-menu slot="dropdown">
+            <el-dropdown-menu slot="dropdown" align="right">
               <el-dropdown-item>查看</el-dropdown-item>
               <el-dropdown-item>新增</el-dropdown-item>
               <el-dropdown-item>删除</el-dropdown-item>

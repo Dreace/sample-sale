@@ -39,7 +39,8 @@
             v-on:change="
               addCartForm.total = addCartForm.price * addCartForm.quantity
             "
-          ></el-input-number>
+          >
+          </el-input-number>
         </el-form-item>
         <el-form-item label="总价">
           <el-input disabled v-model="addCartForm.total"></el-input>
