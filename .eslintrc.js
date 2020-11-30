@@ -1,31 +1,21 @@
 module.exports = {
   root: true,
-  env: {
-    node: true
-  },
-  extends: [
-    "plugin:vue/essential",
-    "eslint:recommended",
-    "@vue/typescript/recommended",
-    "@vue/prettier",
-    "@vue/prettier/@typescript-eslint"
-  ],
+  parser: 'babel-eslint',
   parserOptions: {
-    ecmaVersion: 2020
+    sourceType: 'module'
   },
-  rules: {
-    "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off"
-  },
-  overrides: [
-    {
-      files: [
-        "**/__tests__/*.{j,t}s?(x)",
-        "**/tests/unit/**/*.spec.{j,t}s?(x)"
-      ],
-      env: {
-        mocha: true
-      }
-    }
-  ]
-};
+  // https://github.com/feross/standard/blob/master/RULES.md#javascript-standard-style
+  extends: 'standard',
+  // required to lint *.vue files
+  plugins: [
+    'html',
+    'flowtype'
+  ],
+  // add your custom rules here
+  'rules': {
+    "no-useless-escape": 0,
+    "flowtype/define-flow-type": 1,
+    "flowtype/use-flow-type": 1,
+    'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
+  }
+}
