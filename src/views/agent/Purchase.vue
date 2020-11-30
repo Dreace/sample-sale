@@ -1,6 +1,21 @@
 <template>
   <div>
-    <el-button v-on:click="cartDialogVisible = true">查看购物车</el-button>
+    <el-select
+      v-on:change="refreshStock"
+      v-model="supplierId"
+      placeholder="选择供货商"
+    >
+      <el-option
+        v-for="item in suppliers"
+        :key="item.id"
+        :label="item.name"
+        :value="item.id"
+      >
+      </el-option>
+    </el-select>
+    <el-button style="margin-left: 10px" v-on:click="cartDialogVisible = true"
+      >查看购物车</el-button
+    >
     <el-button v-on:click="refreshStock">刷新</el-button>
     <el-table :data="supplierStocks">
       <el-table-column prop="stockId" label="商品编号"></el-table-column>
@@ -59,7 +74,7 @@
     </el-dialog>
     <el-dialog :visible.sync="cartDialogVisible" id="cart">
       <el-table :data="cartItems" show-summary :summary-method="summary">
-        <el-table-column prop="goodsName" label="名称"> </el-table-column>
+        <el-table-column prop="goodsName" label="名称"></el-table-column>
         <el-table-column prop="price" label="单价"></el-table-column>
         <el-table-column prop="quantity" label="数量"></el-table-column>
         <el-table-column prop="total" label="总价"></el-table-column>
@@ -75,13 +90,13 @@
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cartDialogVisible = false">取 消 </el-button>
+        <el-button @click="cartDialogVisible = false">取 消</el-button>
         <el-button
           type="primary"
           @click="onCartConfirm"
           :disabled="cartItems.length === 0"
-          >下 单</el-button
-        >
+          >下 单
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -102,6 +117,11 @@ interface AddCartFormValue {
   quantity: number;
 }
 
+interface Supplier {
+  id: number;
+  name: string;
+}
+
 @Component
 export default class Purchase extends Vue {
   supplierStocks: SupplierStockValue[] = [];
@@ -114,13 +134,24 @@ export default class Purchase extends Vue {
     stockId: -1,
     goodsName: ""
   };
+  supplierId = 1;
+  suppliers: Supplier[] = [];
   cartItems: AddCartFormValue[] = [];
   cartDialogVisible = false;
 
   async refreshStock() {
-    this.supplierStocks = (await api.get(
-      "agent/supplier/stocks"
+    if (this.supplierId === -1) {
+      return;
+    }
+    const supplierStocks = (await api.get(
+      `agent/suppliers/${this.supplierId}/stocks`
     )) as SupplierStockValue[];
+    this.supplierStocks = [];
+    supplierStocks.forEach(stock => {
+      if (stock.surplus > 0) {
+        this.supplierStocks.push(stock);
+      }
+    });
   }
 
   onAddCart(index: number, row: SupplierStockValue) {
@@ -132,9 +163,11 @@ export default class Purchase extends Vue {
     this.addCartForm.price = this.currentStock.price;
     this.addCartForm.total = this.currentStock.price;
   }
+
   clearAddCartForm() {
     (this.$refs.addCartForm as ElForm).resetFields();
   }
+
   onAddCartConfirm() {
     if (
       this.currentStock &&
@@ -150,9 +183,16 @@ export default class Purchase extends Vue {
     this.clearAddCartForm();
     this.addCartDialogVisible = false;
   }
+
   async onCartConfirm() {
-    await api.post("agent/orders", this.cartItems);
+    await api.post("agent/orders", {
+      supplierId: this.supplierId,
+      items: this.cartItems
+    });
+    this.cartItems = [];
+    this.cartDialogVisible = false;
   }
+
   summary(): Array<string | number> {
     const sums: Array<string | number> = ["合计", ""];
     let quantity = 0,
@@ -166,7 +206,13 @@ export default class Purchase extends Vue {
   }
 
   mounted() {
-    this.refreshStock();
+    this.getSuppliers();
+  }
+
+  async getSuppliers() {
+    this.suppliers = await api.get("agent/suppliers");
+    this.supplierId = this.suppliers[0].id;
+    await this.refreshStock();
   }
 }
 </script>

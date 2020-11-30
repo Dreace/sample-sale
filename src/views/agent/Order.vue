@@ -3,7 +3,7 @@
     <el-button v-on:click="refreshAgentOrders">刷新</el-button>
     <el-table :data="agentOrders">
       <el-table-column prop="orderId" label="订单编号"></el-table-column>
-      <el-table-column prop="agentId" label="代理商标识"></el-table-column>
+      <el-table-column prop="supplierName" label="供货商"></el-table-column>
       <el-table-column prop="createTime" label="创建时间">
         <template slot-scope="scope">
           {{ new Date(scope.row.createTime * 1000).toLocaleString() }}
@@ -139,6 +139,7 @@ interface AgentOrderValue {
   createTime: number;
   additional: string;
   signValid?: boolean;
+  supplierName: string;
 }
 
 interface SignForm {

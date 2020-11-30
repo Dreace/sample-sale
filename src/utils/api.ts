@@ -20,8 +20,8 @@ const codeMessage: any = {
 };
 
 const api = axios.create({
-  // baseURL: "https://sale-api.dreace.top/",
-  baseURL: "http://127.0.0.1:10001/",
+  baseURL: "https://sale-api.dreace.top/",
+  // baseURL: "http://127.0.0.1:10001/",
   responseType: "json",
   withCredentials: true
 });
@@ -37,7 +37,12 @@ api.interceptors.response.use(
     }
   },
   error => {
-    Message.error(codeMessage[error.response.status] || "未知错误");
+    if (!error || !error.response) {
+      Message.error("未知错误");
+    } else {
+      Message.error(codeMessage[error.response.status] || "未知错误");
+    }
+
     return null;
   }
 );
