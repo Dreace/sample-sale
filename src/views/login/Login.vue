@@ -29,6 +29,7 @@
             <el-button
               class="loginButton"
               type="primary"
+              :loading="isloading"
               @click="submitLogin('loginForm')"
               >登录</el-button
             >
@@ -115,6 +116,7 @@
           <el-button
             class="registerButton"
             type="primary"
+            :loading="isloading"
             @click="submitRegister('registerForm')"
             >注册</el-button
           >
@@ -169,6 +171,7 @@ interface EncryptedPrivateKey {
 }
 @Component
 export default class Login extends Vue {
+  isloading = false;
   activeTabName = "LoginTab";
   loginForm: LoginFormValue = { userName: "", password: "" };
   registerForm: RegisterFormValue = {
@@ -305,6 +308,7 @@ export default class Login extends Vue {
     ]
   };
   submitLogin(formName: string) {
+    this.isloading = true;
     const ref: ElForm = this.$refs[formName] as ElForm;
     ref.validate(async (valid: boolean) => {
       if (valid) {
@@ -331,6 +335,7 @@ export default class Login extends Vue {
           }
           localStorage.setItem("access_token", res.access_token);
         }
+        this.isloading = false;
       } else {
         console.log("error submit!");
         return false;
@@ -341,6 +346,7 @@ export default class Login extends Vue {
     const ref: ElForm = this.$refs[formName] as ElForm;
     ref.validate(async (valid: boolean) => {
       if (valid) {
+        this.isloading = true;
         const res = (await api.post("user/register", {
           name: this.registerForm.userName,
           password: this.registerForm.password,
@@ -349,6 +355,7 @@ export default class Login extends Vue {
           keyPassword: this.registerForm.keyPassword
         })) as EncryptedPrivateKey;
         if (res !== null) {
+          this.isloading = false;
           this.activeTabName = "LoginTab"; //跳转回登陆页面
           this.loginForm.userName = this.registerForm.userName;
           this.loginForm.password = this.registerForm.password;

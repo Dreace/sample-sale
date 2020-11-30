@@ -20,8 +20,8 @@ const codeMessage: any = {
 };
 
 const api = axios.create({
-  baseURL: "https://sale-api.dreace.top/",
-  // baseURL: "http://127.0.0.1:10001/",
+  //baseURL: "https://sale-api.dreace.top/",
+  baseURL: "http://127.0.0.1:10001/",
   responseType: "json",
   withCredentials: true
 });
