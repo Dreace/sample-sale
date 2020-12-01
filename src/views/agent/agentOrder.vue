@@ -26,9 +26,8 @@
           <!-- eslint-disable-next-line -->
           <!-- eslint-disable-next-line -->
           <template slot-scope="scope">
-            <el-button size="mini" @click="Download(scope.$index, scope.row)"
-              >下 载</el-button
-            >
+            <!--            <el-button size="mini" @click="Download(scope.$index, scope.row)"-->
+            <!--              >下 载</el-button>-->
             <el-button
               size="mini"
               @click="
@@ -243,9 +242,9 @@ export default class Order extends Vue {
     }
   }
 
-  async Download(index: number, row: OrderInfoValue) {
-    alert("download");
-  }
+  // async Download(index: number, row: OrderInfoValue) {
+  //   alert("download");
+  // }
 
   handleCurrentChange(page: number) {
     this.currentPage1 = page;
