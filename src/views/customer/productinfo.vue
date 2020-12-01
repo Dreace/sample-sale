@@ -288,9 +288,10 @@ export default class Product extends Vue {
       });
     }
     this.dialogFindCartVisible = false;
-    for (let i = 0; i < this.cartItems.length; i++) {
-      this.cartItems.pop();
-    }
+    this.cartItems = [];
+    // for (let i = 0; i < this.cartItems.length; i++) {
+    //   this.cartItems.pop();
+    // }
   }
   AddCart(index: number, row: TableVale) {
     this.dialogAddVisible = true;

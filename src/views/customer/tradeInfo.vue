@@ -3,7 +3,15 @@
     <h1>订单管理</h1>
     <!-- 表格 -->
     <div id="trade">
-      <el-table :data="tableData" style="width: 100%">
+      <el-table
+        :data="
+          tableData.slice(
+            (currentPage1 - 1) * pagesizes,
+            currentPage1 * pagesizes
+          )
+        "
+        style="width: 100%"
+      >
         <el-table-column label="订单编号" prop="orderID"></el-table-column>
         <el-table-column label="收款方" prop="agentID"></el-table-column>
         <el-table-column label="订单时间" prop="orderDate" style="width: 400px">
@@ -24,9 +32,9 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" @click="Download(scope.$index, scope.row)"
-              >下 载</el-button
-            >
+            <!--            <el-button size="mini" @click="Download(scope.$index, scope.row)"-->
+            <!--              >下 载</el-button-->
+            <!--            >-->
             <el-button
               size="mini"
               @click="
@@ -35,12 +43,12 @@
               "
               >查 看</el-button
             >
-            <!--            <el-button-->
-            <!--              size="mini"-->
-            <!--              type="danger"-->
-            <!--              @click="Delete(scope.$index, scope.row)"-->
-            <!--              >删 除</el-button-->
-            <!--            >-->
+            <el-button
+              size="mini"
+              type="danger"
+              @click="Delete(scope.$index, scope.row)"
+              >删 除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -258,15 +266,15 @@ export default class Order extends Vue {
     }
   }
 
-  async Download(index: number, row: OrderInfoValue) {
-    const OrderGoods = (await api.get(
-      `customer/orderDownload/${row.orderID}`
-    )) as DownloadValue;
-    // const file = new File([JSON.stringify(OrderGoods, null, 5)], "hello.txt", {
-    //   type: "application/json,charset=UTF-8"
-    // });
-    // FileSaver.saveAs(file);
-  }
+  // async Download(index: number, row: OrderInfoValue) {
+  //   const OrderGoods = (await api.get(
+  //     `customer/orderDownload/${row.orderID}`
+  //   )) as DownloadValue;
+  // const file = new File([JSON.stringify(OrderGoods, null, 5)], "hello.txt", {
+  //   type: "application/json,charset=UTF-8"
+  // });
+  // FileSaver.saveAs(file);
+  // }
 
   handleCurrentChange(page: number) {
     this.currentPage1 = page;
@@ -275,15 +283,28 @@ export default class Order extends Vue {
   handleSizeChange(size: number) {
     this.pagesizes = size;
   }
-  // async Delete(index: number, row: OrderInfoValue) {
-  //   const res = await api.post("customer/OrderDelete", row);
-  //   if (res !== null) {
-  //     this.$message({
-  //       type: "success",
-  //       message: res + "删除成功!"
-  //     });
-  //   }
-  // }
+  Delete(index: number, row: OrderInfoValue) {
+    this.$confirm("此操作将永久删除该订单将导致无法追朔, 是否继续?", "提示", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning"
+    })
+      .then(async () => {
+        const res = await api.post("customer/OrderDelete", row);
+        if (res !== null) {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+        }
+      })
+      .catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
+      });
+  }
 
   customerSignCheck() {
     if (!this.privateKey) {

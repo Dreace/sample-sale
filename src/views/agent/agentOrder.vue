@@ -3,7 +3,13 @@
     <h1>客户订单管理</h1>
     <!-- 表格 -->
     <div id="trade">
-      <el-table :data="tableData" style="width: 100%">
+      <el-table
+        :data="
+          tableData.slice((currentPage - 1) * pagesize, currentPage * pagesize)
+        "
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column label="订单编号" prop="orderID"></el-table-column>
         <el-table-column label="收款方" prop="agentID"></el-table-column>
         <el-table-column label="订单时间" prop="orderDate" style="width: 400px">
@@ -160,9 +166,9 @@
     <div class="block" align="center">
       <el-pagination
         layout="prev, pager, next, sizes, total, jumper"
-        :current-page.sync="currentPage1"
+        :current-page.sync="currentPage"
         :page-sizes="[5, 10, 15, 20]"
-        :page-size="pagesizes"
+        :page-size="pagesize"
         :total="pagetotal"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
@@ -211,8 +217,8 @@ export default class Order extends Vue {
   search = "";
   dialogOrderVisible = false;
   customerSignVisible = false;
-  currentPage1 = 1;
-  pagesizes = 10;
+  currentPage = 1;
+  pagesize = 10;
   pagetotal = 1;
   OrderInfo: OrderInfoValue = {
     customerID: 0,
@@ -247,11 +253,14 @@ export default class Order extends Vue {
   // }
 
   handleCurrentChange(page: number) {
-    this.currentPage1 = page;
+    this.currentPage = page;
   }
 
   handleSizeChange(size: number) {
-    this.pagesizes = size;
+    this.pagesize = size;
+  }
+  handleSelectionChange(val: number) {
+    console.log(val);
   }
   // async Delete(index: number, row: OrderInfoValue) {
   //   const res = await api.post("customer/OrderDelete", row);
