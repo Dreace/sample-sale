@@ -67,6 +67,16 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
+    path: "/log",
+    component: Empty,
+    children: [
+      {
+        path: "log",
+        component: () => import("../views/log/log.vue")
+      }
+    ]
+  },
+  {
     path: "/about",
     name: "About",
     // route level code-splitting
