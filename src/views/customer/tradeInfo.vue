@@ -35,12 +35,12 @@
               "
               >查 看</el-button
             >
-            <el-button
-              size="mini"
-              type="danger"
-              @click="Delete(scope.$index, scope.row)"
-              >删 除</el-button
-            >
+            <!--            <el-button-->
+            <!--              size="mini"-->
+            <!--              type="danger"-->
+            <!--              @click="Delete(scope.$index, scope.row)"-->
+            <!--              >删 除</el-button-->
+            <!--            >-->
           </template>
         </el-table-column>
       </el-table>
@@ -262,10 +262,10 @@ export default class Order extends Vue {
     const OrderGoods = (await api.get(
       `customer/orderDownload/${row.orderID}`
     )) as DownloadValue;
-    const file = new File([JSON.stringify(OrderGoods, null, 5)], "hello.txt", {
-      type: "application/json,charset=UTF-8"
-    });
-    FileSaver.saveAs(file);
+    // const file = new File([JSON.stringify(OrderGoods, null, 5)], "hello.txt", {
+    //   type: "application/json,charset=UTF-8"
+    // });
+    // FileSaver.saveAs(file);
   }
 
   handleCurrentChange(page: number) {
@@ -275,15 +275,15 @@ export default class Order extends Vue {
   handleSizeChange(size: number) {
     this.pagesizes = size;
   }
-  async Delete(index: number, row: OrderInfoValue) {
-    const res = await api.post("customer/OrderDelete", row);
-    if (res !== null) {
-      this.$message({
-        type: "success",
-        message: res + "删除成功!"
-      });
-    }
-  }
+  // async Delete(index: number, row: OrderInfoValue) {
+  //   const res = await api.post("customer/OrderDelete", row);
+  //   if (res !== null) {
+  //     this.$message({
+  //       type: "success",
+  //       message: res + "删除成功!"
+  //     });
+  //   }
+  // }
 
   customerSignCheck() {
     if (!this.privateKey) {
