@@ -42,7 +42,8 @@
             v-if="
               this.$route.path === '/customer/productinfo' ||
                 this.$route.path === '/customer/shopcart' ||
-                this.$route.path === '/customer/tradeInfo'
+                this.$route.path === '/customer/tradeInfo' ||
+                this.$route.path === '/customer/trace'
             "
           >
             <template slot="title">
@@ -51,6 +52,13 @@
             <el-menu-item index="/customer/productinfo">商品信息</el-menu-item>
             <el-menu-item index="/customer/shopcart">购物车</el-menu-item>
             <el-menu-item index="/customer/tradeInfo">交易信息</el-menu-item>
+            <el-menu-item index="/customer/trace">商品追溯</el-menu-item>
+          </el-submenu>
+          <el-submenu index="4" v-if="this.$route.path === '/admin/log'">
+            <template slot="title">
+              <i class="el-icon-message"></i>管理员
+            </template>
+            <el-menu-item index="/admin/log">日志</el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
