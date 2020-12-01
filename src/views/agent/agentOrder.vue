@@ -26,9 +26,8 @@
           <!-- eslint-disable-next-line -->
           <!-- eslint-disable-next-line -->
           <template slot-scope="scope">
-            <el-button size="mini" @click="Download(scope.$index, scope.row)"
-              >下 载</el-button
-            >
+            <!--            <el-button size="mini" @click="Download(scope.$index, scope.row)"-->
+            <!--              >下 载</el-button>-->
             <el-button
               size="mini"
               @click="
@@ -38,12 +37,12 @@
               "
               >查 看</el-button
             >
-            <el-button
-              size="mini"
-              type="danger"
-              @click="Delete(scope.$index, scope.row)"
-              >删 除</el-button
-            >
+            <!--            <el-button-->
+            <!--              size="mini"-->
+            <!--              type="danger"-->
+            <!--              @click="Delete(scope.$index, scope.row)"-->
+            <!--              >删 除</el-button-->
+            <!--            >-->
           </template>
         </el-table-column>
       </el-table>
@@ -243,9 +242,9 @@ export default class Order extends Vue {
     }
   }
 
-  async Download(index: number, row: OrderInfoValue) {
-    alert("download");
-  }
+  // async Download(index: number, row: OrderInfoValue) {
+  //   alert("download");
+  // }
 
   handleCurrentChange(page: number) {
     this.currentPage1 = page;
@@ -254,15 +253,15 @@ export default class Order extends Vue {
   handleSizeChange(size: number) {
     this.pagesizes = size;
   }
-  async Delete(index: number, row: OrderInfoValue) {
-    const res = await api.post("customer/OrderDelete", row);
-    if (res !== null) {
-      this.$message({
-        type: "success",
-        message: res + "删除成功!"
-      });
-    }
-  }
+  // async Delete(index: number, row: OrderInfoValue) {
+  //   const res = await api.post("customer/OrderDelete", row);
+  //   if (res !== null) {
+  //     this.$message({
+  //       type: "success",
+  //       message: res + "删除成功!"
+  //     });
+  //   }
+  // }
 
   customerSignCheck() {
     if (!this.privateKey) {
