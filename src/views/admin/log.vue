@@ -4,7 +4,7 @@
       <h1>日志</h1>
       <div style="margin-top: 15px;">
         <el-row>
-          <el-col>
+          <el-col :span="20">
             <el-input
               placeholder="请输入内容"
               v-model="search"
@@ -17,8 +17,8 @@
                 placeholder="请选择"
               >
                 <el-option label="用户ID" value="1"></el-option>
-                <el-option label="对象表" value="2"></el-option>
-                <el-option label="细节" value="3"></el-option>
+                <el-option label="操作表" value="2"></el-option>
+                <el-option label="操作细节" value="3"></el-option>
               </el-select>
               <el-button
                 slot="append"
@@ -26,6 +26,9 @@
                 v-on:click="searchLog()"
               ></el-button>
             </el-input>
+          </el-col>
+          <el-col :span="1">
+            <el-button type="primary" @click="refreshlog()">刷新</el-button>
           </el-col>
         </el-row>
       </div>
@@ -39,10 +42,12 @@
         style="width: 100%"
       >
         <el-table-column prop="time" label="时间"> </el-table-column>
-        <el-table-column prop="userId" label="用户ID"> </el-table-column>
-        <el-table-column prop="operation" label="操作"> </el-table-column>
-        <el-table-column prop="table" label="对象表"> </el-table-column>
-        <el-table-column prop="detail" label="细节"> </el-table-column>
+        <el-table-column prop="userId" label="用户ID" width="100">
+        </el-table-column>
+        <el-table-column prop="operation" label="请求方式" width="100">
+        </el-table-column>
+        <el-table-column prop="table" label="操作表"> </el-table-column>
+        <el-table-column prop="detail" label="操作细节"> </el-table-column>
       </el-table>
       <div class="pagination">
         <el-pagination
@@ -87,11 +92,18 @@ export default class Log extends Vue {
     table: "",
     detail: ""
   };
+  mounted() {
+    this.refreshlog();
+  }
   async searchLog() {
     this.tableData = (await api.post("trace/log", {
       select: this.searchSelect,
       search: this.search
     })) as LogValue[];
+    this.search = "";
+  }
+  async refreshlog() {
+    this.tableData = (await api.get("trace/refreshlog")) as LogValue[];
   }
   async handleSizeChange(size: number) {
     this.pagesize = size;
@@ -107,7 +119,7 @@ export default class Log extends Vue {
   text-align: center;
 }
 .el-select .el-input {
-  width: 98px;
+  width: 110px;
 }
 .el-input {
   width: 500px;
