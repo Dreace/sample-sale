@@ -50,11 +50,7 @@
       >
         <el-form ref="signForm" :model="signForm" label-width="80px">
           <el-form-item label="私钥" required>
-            <input
-              type="file"
-              accept=".pem,.asc"
-              @change="readPrivateKey($event)"
-            />
+            <input type="file" accept=".pem" @change="readPrivateKey($event)" />
             <div v-if="privateKey">
               {{ privateKey.getUserIds()[0] }}
             </div>
@@ -100,7 +96,7 @@
             {{ new Date(scope.row.productionDate * 1000).toLocaleString() }}
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="加个"></el-table-column>
+        <el-table-column prop="price" label="单价"></el-table-column>
         <el-table-column prop="signValid" label="签名校验">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.signValid">
@@ -201,7 +197,7 @@ export default class Order extends Vue {
             goodsSign.push(item.sign);
           });
           const orderInformation = {
-            additional: this.currentOrder.additional,
+            additional: "无",
             agentId: this.currentOrder.agentId,
             createTime: this.currentOrder.createTime,
             orderId: this.currentOrder.orderId,

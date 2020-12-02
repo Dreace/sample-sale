@@ -34,6 +34,10 @@ const routes: Array<RouteConfig> = [
       {
         path: "tradeInfo",
         component: () => import("../views/customer/tradeInfo.vue")
+      },
+      {
+        path: "trace",
+        component: () => import("../views/trace/trace.vue")
       }
     ]
   },
@@ -48,6 +52,26 @@ const routes: Array<RouteConfig> = [
       {
         path: "agentOrder",
         component: () => import("@/views/agent/agentOrder.vue")
+      },
+      {
+        path: "/agent",
+        component: Empty,
+        children: [
+          {
+            path: "purchase",
+            component: () => import("@/views/agent/Purchase.vue")
+          }
+        ]
+      },
+      {
+        path: "/admin",
+        component: Empty,
+        children: [
+          {
+            path: "log",
+            component: () => import("../views/admin/log.vue")
+          }
+        ]
       },
       {
         path: "order",

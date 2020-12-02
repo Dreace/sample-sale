@@ -330,6 +330,11 @@ export default class Login extends Vue {
               break;
             case 2: //客户
               await this.$router.push({ path: "/customer/productinfo" });
+              // await this.$router.push({ path: "/trace/trace" });
+              console.log(this.$route.path);
+              break;
+            case 3: //管理员
+              await this.$router.push({ path: "/admin/log" });
               console.log(this.$route.path);
               break;
           }

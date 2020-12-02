@@ -102,11 +102,7 @@
           ></el-input-number>
         </el-form-item>
         <el-form-item label="私钥" required>
-          <input
-            type="file"
-            accept=".pem,.asc"
-            @change="readPrivateKey($event)"
-          />
+          <input type="file" accept=".pem" @change="readPrivateKey($event)" />
           <div v-if="privateKey">
             {{ privateKey.getUserIds()[0] }}
           </div>
