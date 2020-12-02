@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-title">代理销售软件</div>
     <el-tabs v-model="activeTabName" class="tabs" :stretch="true">
-      <el-tab-pane name="LoginTab" label="登陆">
+      <el-tab-pane name="LoginTab" label="登录">
         <el-form
           :model="loginForm"
           :rules="loginRules"
@@ -20,7 +20,7 @@
           <el-form-item prop="password">
             <el-input
               v-model="loginForm.password"
-              placeholder="登陆密码"
+              placeholder="登录密码"
               show-password
               prefix-icon="el-icon-lock"
             />
@@ -74,7 +74,7 @@
               <el-form-item prop="password">
                 <el-input
                   v-model="registerForm.password"
-                  placeholder="登陆密码"
+                  placeholder="登录密码"
                   show-password
                   prefix-icon="el-icon-lock"
                 />
@@ -84,7 +84,7 @@
               <el-form-item prop="confirmPassword">
                 <el-input
                   v-model="registerForm.confirmPassword"
-                  placeholder="确认登陆密码"
+                  placeholder="确认登录密码"
                   show-password
                   prefix-icon="el-icon-lock"
                 />
@@ -251,7 +251,7 @@ export default class Login extends Vue {
       }
     ],
     password: [
-      { required: true, message: "请输入登陆密码", trigger: "blur" },
+      { required: true, message: "请输入登录密码", trigger: "blur" },
       {
         min: 3,
         max: 20,
@@ -262,14 +262,14 @@ export default class Login extends Vue {
     confirmPassword: [
       {
         required: true,
-        message: "请再次输入登陆密码",
+        message: "请再次输入登录密码",
         trigger: "blur"
       },
       {
         validator: this.validatePassword,
         min: 3,
         max: 20,
-        message: "与登陆密码不一致",
+        message: "与登录密码不一致",
         trigger: "blur"
       }
     ],
@@ -317,7 +317,7 @@ export default class Login extends Vue {
           password: this.loginForm.password
         })) as UserInformation;
         if (res !== null) {
-          //若登陆成功则跳转页面
+          //若登录成功则跳转页面
           sessionStorage.setItem("competence", res.competence.toString());
           switch (res.competence) {
             case 0: //供货商
@@ -359,7 +359,7 @@ export default class Login extends Vue {
           keyPassword: this.registerForm.keyPassword
         })) as EncryptedPrivateKey;
         if (res !== null) {
-          this.activeTabName = "LoginTab"; //跳转回登陆页面
+          this.activeTabName = "LoginTab"; //跳转回登录页面
           this.loginForm.userName = this.registerForm.userName;
           this.loginForm.password = this.registerForm.password;
           const file = new File([res.encryptedPrivateKey], "PriavetKey.pem", {
