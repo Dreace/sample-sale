@@ -42,6 +42,16 @@ const routes: Array<RouteConfig> = [
     ]
   },
   {
+    path: "/admin",
+    component: Empty,
+    children: [
+      {
+        path: "log",
+        component: () => import("../views/admin/log.vue")
+      }
+    ]
+  },
+  {
     path: "/agent",
     component: Empty,
     children: [
@@ -60,16 +70,6 @@ const routes: Array<RouteConfig> = [
           {
             path: "purchase",
             component: () => import("@/views/agent/Purchase.vue")
-          }
-        ]
-      },
-      {
-        path: "/admin",
-        component: Empty,
-        children: [
-          {
-            path: "log",
-            component: () => import("../views/admin/log.vue")
           }
         ]
       },
