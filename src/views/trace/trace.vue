@@ -156,5 +156,6 @@ export default class Trace extends Vue {
   margin-top: 20px;
   margin: 0px auto;
   width: 500px;
+  background: rgb(238, 241, 246);
 }
 </style>
