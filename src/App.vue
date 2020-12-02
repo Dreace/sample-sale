@@ -44,7 +44,7 @@
             v-if="
               this.$route.path === '/customer/productinfo' ||
                 this.$route.path === '/customer/tradeInfo' ||
-                this.$route.path === '/trace/trace'
+                this.$route.path === '/customer/trace'
             "
           >
             <template slot="title">
