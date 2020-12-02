@@ -1,9 +1,34 @@
 <template>
   <div>
     <div class="title">
-      <h1>
-        日志
-      </h1>
+      <h1>日志</h1>
+      <div style="margin-top: 15px;">
+        <el-row>
+          <el-col>
+            <el-input
+              placeholder="请输入内容"
+              v-model="search"
+              class="input-with-select"
+            >
+              <el-select
+                class="select1"
+                v-model="searchSelect"
+                slot="prepend"
+                placeholder="请选择"
+              >
+                <el-option label="用户ID" value="1"></el-option>
+                <el-option label="对象表" value="2"></el-option>
+                <el-option label="细节" value="3"></el-option>
+              </el-select>
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                v-on:click="searchLog()"
+              ></el-button>
+            </el-input>
+          </el-col>
+        </el-row>
+      </div>
     </div>
     <div class="table">
       <el-table
@@ -53,6 +78,8 @@ export default class Log extends Vue {
   tableData: LogValue[] = [];
   currentPage = 1;
   pagesize = 20;
+  search = "";
+  searchSelect = "1";
   logForm: LogValue = {
     time: "",
     userId: 0,
@@ -60,11 +87,11 @@ export default class Log extends Vue {
     table: "",
     detail: ""
   };
-  mounted() {
-    this.getlog();
-  }
-  async getlog() {
-    this.tableData = (await api.get("trace/log")) as LogValue[];
+  async searchLog() {
+    this.tableData = (await api.post("trace/log", {
+      select: this.searchSelect,
+      search: this.search
+    })) as LogValue[];
   }
   async handleSizeChange(size: number) {
     this.pagesize = size;
@@ -78,5 +105,11 @@ export default class Log extends Vue {
 <style>
 .title {
   text-align: center;
+}
+.el-select .el-input {
+  width: 98px;
+}
+.el-input {
+  width: 500px;
 }
 </style>
