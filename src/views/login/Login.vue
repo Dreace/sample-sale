@@ -308,10 +308,10 @@ export default class Login extends Vue {
     ]
   };
   submitLogin(formName: string) {
-    this.isloading = true;
     const ref: ElForm = this.$refs[formName] as ElForm;
     ref.validate(async (valid: boolean) => {
       if (valid) {
+        this.isloading = true;
         const res = (await api.post("/login", {
           username: this.loginForm.userName,
           password: this.loginForm.password
@@ -330,7 +330,6 @@ export default class Login extends Vue {
               break;
             case 2: //客户
               await this.$router.push({ path: "/customer/productinfo" });
-              // await this.$router.push({ path: "/trace/trace" });
               console.log(this.$route.path);
               break;
             case 3: //管理员
@@ -360,7 +359,6 @@ export default class Login extends Vue {
           keyPassword: this.registerForm.keyPassword
         })) as EncryptedPrivateKey;
         if (res !== null) {
-          this.isloading = false;
           this.activeTabName = "LoginTab"; //跳转回登陆页面
           this.loginForm.userName = this.registerForm.userName;
           this.loginForm.password = this.registerForm.password;
@@ -374,6 +372,7 @@ export default class Login extends Vue {
             type: "success"
           });
         }
+        this.isloading = false;
       } else {
         console.log("error submit!");
         return false;
