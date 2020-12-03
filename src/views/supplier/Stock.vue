@@ -29,7 +29,7 @@
       </el-table-column>
     </el-table>
     <el-dialog
-      title="商品信息"
+      title="新建库存"
       :visible.sync="addStockDialogVisible"
       width="500px"
       destroy-on-close
@@ -86,7 +86,7 @@
       </div>
     </el-dialog>
     <el-dialog
-      title="商品信息"
+      title="增加库存"
       :visible.sync="addSurplusDialogVisible"
       width="500px"
       destroy-on-close
@@ -98,11 +98,16 @@
         <el-form-item label="增加数量">
           <el-input-number
             :min="1"
+            :step="1"
             v-model="addSurplusForm.quantity"
           ></el-input-number>
         </el-form-item>
         <el-form-item label="私钥" required>
-          <input type="file" accept=".pem" @change="readPrivateKey($event)" />
+          <input
+            type="file"
+            accept=".pem,.asc"
+            @change="readPrivateKey($event)"
+          />
           <div v-if="privateKey">
             {{ privateKey.getUserIds()[0] }}
           </div>
@@ -269,7 +274,6 @@ export default class Stock extends Vue {
                   detached: true
                 })
               ).signature;
-              console.log(goods);
               signedGoods.push(goods);
             }
             const count = await api.put(
@@ -311,7 +315,7 @@ export default class Stock extends Vue {
   }
 
   clearAddStockForm() {
-    (this.$refs.addSurplusForm as ElForm).resetFields();
+    (this.$refs.addStockForm as ElForm).resetFields();
   }
 
   async onAddStockConfirm() {

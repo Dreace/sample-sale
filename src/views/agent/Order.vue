@@ -34,13 +34,28 @@
             v-on:click="
               currentOrder = scope.row;
               getOrderGoods();
+              showConfirmButton = true;
             "
             >签名
+          </el-button>
+          <el-button
+            size="mini"
+            v-on:click="
+              currentOrder = scope.row;
+              getOrderGoods();
+              orderDialogVisible = true;
+              showConfirmButton = false;
+            "
+            >查看
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="订单详情" :visible.sync="orderDialogVisible">
+    <el-dialog
+      title="订单详情"
+      :visible.sync="orderDialogVisible"
+      width="1000px"
+    >
       <el-dialog
         title="商品信息"
         :visible.sync="signDialogVisible"
@@ -95,22 +110,24 @@
         <el-divider direction="vertical"></el-divider>
 
         <el-tag type="success" size="mini" v-if="currentOrder.signValid"
-          >供货商签名校验成功</el-tag
-        >
+          >供货商签名校验成功
+        </el-tag>
         <el-tag type="warning" size="mini" v-else>供货商签名校验失败</el-tag>
       </div>
       <el-table :data="agentOrderGoods" show-summary :summary-method="summary">
+        <el-table-column prop="goodsId" label="编号"></el-table-column>
         <el-table-column prop="goodsName" label="名称"></el-table-column>
         <el-table-column prop="productionDate" label="生产日期">
           <template slot-scope="scope">
             {{ new Date(scope.row.productionDate * 1000).toLocaleString() }}
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="加个"></el-table-column>
+        <el-table-column prop="price" label="价格"></el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false">取 消</el-button>
         <el-button
+          v-if="showConfirmButton"
           type="primary"
           @click="signDialogVisible = true"
           :disabled="!currentOrder || !currentOrder.signValid"
@@ -157,6 +174,7 @@ export default class Order extends Vue {
   signForm: SignForm = {
     password: ""
   };
+  showConfirmButton = false;
 
   async refreshAgentOrders() {
     this.agentOrders = await api.get("agent/orders");
@@ -228,10 +246,11 @@ export default class Order extends Vue {
 
   async getOrderGoods() {
     if (this.currentOrder) {
+      this.agentOrderGoods = [];
       const agentOrderGoods: GoodsValue[] = await api.get(
         `supplier/orders/${this.currentOrder.orderId}`
       );
-      if (this.currentOrder) {
+      if (this.currentOrder && this.currentOrder.supplierSign) {
         const goodsSign: string[] = [];
         agentOrderGoods.forEach(item => {
           goodsSign.push(item.sign);
@@ -244,7 +263,6 @@ export default class Order extends Vue {
           supplierId: this.currentOrder.supplierId,
           signs: goodsSign
         };
-        console.log(JSON.stringify(orderInformation));
         this.currentOrder.signValid = (
           await verify({
             message: cleartext.fromText(JSON.stringify(orderInformation)), // CleartextMessage or Message object
@@ -263,7 +281,7 @@ export default class Order extends Vue {
   }
 
   summary(): Array<string | number> {
-    const sums: Array<string | number> = ["合计", ""];
+    const sums: Array<string | number> = ["合计", "", ""];
     let total = 0;
     for (const item of this.agentOrderGoods) {
       total += item.price;

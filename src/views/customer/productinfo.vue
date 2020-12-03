@@ -303,7 +303,7 @@ export default class Product extends Vue {
     this.addCartForm.total = this.currentStock.price;
   }
   summary(): Array<string | number> {
-    const sums: Array<string | number> = ["合计", ""];
+    const sums: Array<string | number> = ["合计", "", ""];
     let quantity = 0,
       total = 0;
     for (const item of this.cartItems) {

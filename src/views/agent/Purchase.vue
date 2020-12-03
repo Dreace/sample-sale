@@ -191,10 +191,11 @@ export default class Purchase extends Vue {
     });
     this.cartItems = [];
     this.cartDialogVisible = false;
+    await this.refreshStock();
   }
 
   summary(): Array<string | number> {
-    const sums: Array<string | number> = ["合计", ""];
+    const sums: Array<string | number> = ["合计", "", ""];
     let quantity = 0,
       total = 0;
     for (const item of this.cartItems) {

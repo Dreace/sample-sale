@@ -3,7 +3,7 @@
     <el-button v-on:click="refreshAgentOrders">刷新</el-button>
     <el-table :data="agentOrders">
       <el-table-column prop="orderId" label="订单编号"></el-table-column>
-      <el-table-column prop="agentId" label="代理商标识"></el-table-column>
+      <el-table-column prop="agentName" label="代理商"></el-table-column>
       <el-table-column prop="createTime" label="创建时间">
         <template slot-scope="scope">
           {{ new Date(scope.row.createTime * 1000).toLocaleString() }}
@@ -30,19 +30,34 @@
           <el-button
             type="primary"
             size="mini"
-            :disabled="scope.row.supplierSign"
+            :disabled="!!scope.row.supplierSign"
             v-on:click="
               currentOrder = scope.row;
               getOrderGoods();
+              showConfirmButton = true;
             "
             >签名
           </el-button>
+          <el-button
+            size="mini"
+            v-on:click="
+              currentOrder = scope.row;
+              getOrderGoods();
+              orderDialogVisible = true;
+              showConfirmButton = false;
+            "
+            >查看</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="订单详情" :visible.sync="orderDialogVisible">
+    <el-dialog
+      title="订单详情"
+      :visible.sync="orderDialogVisible"
+      width="1000px"
+    >
       <el-dialog
-        title="商品信息"
+        title="签名订单"
         :visible.sync="signDialogVisible"
         width="500px"
         destroy-on-close
@@ -50,7 +65,11 @@
       >
         <el-form ref="signForm" :model="signForm" label-width="80px">
           <el-form-item label="私钥" required>
-            <input type="file" accept=".pem" @change="readPrivateKey($event)" />
+            <input
+              type="file"
+              accept=".pem,.asc"
+              @change="readPrivateKey($event)"
+            />
             <div v-if="privateKey">
               {{ privateKey.getUserIds()[0] }}
             </div>
@@ -73,7 +92,7 @@
           <el-button
             @click="
               signDialogVisible = false;
-              signForm.password = '';
+              clearSignForm();
             "
             >取 消
           </el-button>
@@ -90,13 +109,18 @@
         <span>附加协议：{{ currentOrder.additional }}</span>
       </div>
       <el-table :data="agentOrderGoods" show-summary :summary-method="summary">
+        <el-table-column prop="goodsId" label="编号"></el-table-column>
         <el-table-column prop="goodsName" label="名称"></el-table-column>
         <el-table-column prop="productionDate" label="生产日期">
           <template slot-scope="scope">
             {{ new Date(scope.row.productionDate * 1000).toLocaleString() }}
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="单价"></el-table-column>
+        <el-table-column
+          width="70px"
+          prop="price"
+          label="单价"
+        ></el-table-column>
         <el-table-column prop="signValid" label="签名校验">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.signValid">
@@ -109,6 +133,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="orderDialogVisible = false">取 消</el-button>
         <el-button
+          v-if="showConfirmButton"
           type="primary"
           @click="signDialogVisible = true"
           :disabled="allSignVerified !== true"
@@ -135,6 +160,7 @@ interface AgentOrderValue {
   agentSign?: string;
   createTime: number;
   additional: string;
+  agentName: string;
 }
 
 interface SignForm {
@@ -153,6 +179,8 @@ export default class Order extends Vue {
   signForm: SignForm = {
     password: ""
   };
+  publicKey = "";
+  showConfirmButton = false;
 
   async refreshAgentOrders() {
     this.agentOrders = await api.get("supplier/orders");
@@ -217,15 +245,24 @@ export default class Order extends Vue {
           await this.refreshAgentOrders();
           this.signDialogVisible = false;
           this.orderDialogVisible = false;
+          this.clearSignForm();
         }
       }
     });
   }
 
+  clearSignForm() {
+    (this.$refs.signForm as ElForm).resetFields();
+  }
+
   async getOrderGoods() {
     if (this.currentOrder) {
+      this.agentOrderGoods = [];
       const agentOrderGoods: GoodsValue[] = await api.get(
         `supplier/orders/${this.currentOrder.orderId}`
+      );
+      this.publicKey = await api.get(
+        `user/${this.currentOrder.supplierId}/key`
       );
       // this.signCheckResult = Array(this.agentOrderGoods.length);
       for (const goods of agentOrderGoods) {
@@ -250,38 +287,18 @@ export default class Order extends Vue {
       price: row.price,
       sign: ""
     };
+
     row.signValid = (
       await verify({
         message: cleartext.fromText(JSON.stringify(goods)), // CleartextMessage or Message object
         signature: await signature.readArmored(row.sign), // parse detached signature
-        publicKeys: (
-          await key.readArmored(
-            "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
-              "\n" +
-              "mQENBF+4sKsBCACiaavtsCSp6A5inAdk4PnlbE8Rr7Onhp2wn+razP4SWIcFlHbc\n" +
-              "DcIXf/+b9gVWWxPEy15kJ4XIUhktC5EElrUQii38qwH6ws4t5ELSX16xqCKIkx8M\n" +
-              "+OQKD/2o2FTYPM6DS58uUWTqYoSwaLxpYuarsvRR1yZtbkLWmiunCdaO8DmGKFBE\n" +
-              "pd4jcKvZlujyl8wqZ6Yz45B3+KY+rDKK980RO5OZWQDT++pYXIvlqXm7+7WCPwAk\n" +
-              "oaXs4pwfiLZZ5jdW8hbBgLyyIQmWdDLURG7Wp1O2K5e6wCVSMP7N7jTUXHDmfN5o\n" +
-              "+2RTe9i0dhQgE3HuUTTqGnwkdDUM2SxYM4uxABEBAAG0InRlc3QgKHNpbXBsZS1z\n" +
-              "YWxlKSA8ZnVja0BudWMuc2hpdD6JAU4EEwEIADgWIQRz7nzBtIm/nMMiGu/uaCQQ\n" +
-              "VTA10QUCX7iwqwIbLwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRDuaCQQVTA1\n" +
-              "0dWpB/9Vc1OK9zfwtRznNLIZJgVOpm/17uuVDgqvxNSsgw4Zemtd3KXmTPagYyED\n" +
-              "nmjxa6I8Kgy6pZcHz4x6FNMhDERIFuqSIAaHUcw6JYkccPzmSbBCvjHg8Itl4Ztr\n" +
-              "1i/jpRjVp7Air+AnrgLAKoAp+KT1j7cKhu68nwbhX464IblHHDbudCxg1za1FXre\n" +
-              "wTNqi/Pn4QXBbtZSJUu7/hhAJE5IjWnYELbSU06bbypT4UpaxnzRsP6BYSeF3id7\n" +
-              "6Q5TUWsbplwXPwXY0wbo0y5xdV8T9Ml45CXi34hgWI3VALyFkckdK3mv32o7K4jp\n" +
-              "1vSTQByZ0JZUQJLAaeOVj0HFcwF7\n" +
-              "=C0bL\n" +
-              "-----END PGP PUBLIC KEY BLOCK-----"
-          )
-        ).keys // for verification
+        publicKeys: (await key.readArmored(this.publicKey)).keys // for verification
       })
     ).signatures[0].valid;
   }
 
   summary(): Array<string | number> {
-    const sums: Array<string | number> = ["合计"];
+    const sums: Array<string | number> = ["合计", ""];
     let quantity = 0,
       total = 0;
     for (const item of this.agentOrderGoods) {
