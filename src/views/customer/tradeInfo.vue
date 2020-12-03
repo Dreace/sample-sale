@@ -396,30 +396,35 @@ export default class Order extends Vue {
       price: row.price,
       sign: ""
     };
+    const GoodsPubileKey: string = await api.get(
+      `customer/goodsCheck/${row.goodsId}`
+    );
+    console.log(GoodsPubileKey);
     row.signValid = (
       await verify({
         message: cleartext.fromText(JSON.stringify(goods)), // CleartextMessage or Message object
         signature: await signature.readArmored(row.sign), // parse detached signature
         publicKeys: (
           await key.readArmored(
-            "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
-              "\n" +
-              "mQENBF+4sKsBCACiaavtsCSp6A5inAdk4PnlbE8Rr7Onhp2wn+razP4SWIcFlHbc\n" +
-              "DcIXf/+b9gVWWxPEy15kJ4XIUhktC5EElrUQii38qwH6ws4t5ELSX16xqCKIkx8M\n" +
-              "+OQKD/2o2FTYPM6DS58uUWTqYoSwaLxpYuarsvRR1yZtbkLWmiunCdaO8DmGKFBE\n" +
-              "pd4jcKvZlujyl8wqZ6Yz45B3+KY+rDKK980RO5OZWQDT++pYXIvlqXm7+7WCPwAk\n" +
-              "oaXs4pwfiLZZ5jdW8hbBgLyyIQmWdDLURG7Wp1O2K5e6wCVSMP7N7jTUXHDmfN5o\n" +
-              "+2RTe9i0dhQgE3HuUTTqGnwkdDUM2SxYM4uxABEBAAG0InRlc3QgKHNpbXBsZS1z\n" +
-              "YWxlKSA8ZnVja0BudWMuc2hpdD6JAU4EEwEIADgWIQRz7nzBtIm/nMMiGu/uaCQQ\n" +
-              "VTA10QUCX7iwqwIbLwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRDuaCQQVTA1\n" +
-              "0dWpB/9Vc1OK9zfwtRznNLIZJgVOpm/17uuVDgqvxNSsgw4Zemtd3KXmTPagYyED\n" +
-              "nmjxa6I8Kgy6pZcHz4x6FNMhDERIFuqSIAaHUcw6JYkccPzmSbBCvjHg8Itl4Ztr\n" +
-              "1i/jpRjVp7Air+AnrgLAKoAp+KT1j7cKhu68nwbhX464IblHHDbudCxg1za1FXre\n" +
-              "wTNqi/Pn4QXBbtZSJUu7/hhAJE5IjWnYELbSU06bbypT4UpaxnzRsP6BYSeF3id7\n" +
-              "6Q5TUWsbplwXPwXY0wbo0y5xdV8T9Ml45CXi34hgWI3VALyFkckdK3mv32o7K4jp\n" +
-              "1vSTQByZ0JZUQJLAaeOVj0HFcwF7\n" +
-              "=C0bL\n" +
-              "-----END PGP PUBLIC KEY BLOCK-----"
+            GoodsPubileKey
+            // "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+            //   "\n" +
+            //   "mQENBF+4sKsBCACiaavtsCSp6A5inAdk4PnlbE8Rr7Onhp2wn+razP4SWIcFlHbc\n" +
+            //   "DcIXf/+b9gVWWxPEy15kJ4XIUhktC5EElrUQii38qwH6ws4t5ELSX16xqCKIkx8M\n" +
+            //   "+OQKD/2o2FTYPM6DS58uUWTqYoSwaLxpYuarsvRR1yZtbkLWmiunCdaO8DmGKFBE\n" +
+            //   "pd4jcKvZlujyl8wqZ6Yz45B3+KY+rDKK980RO5OZWQDT++pYXIvlqXm7+7WCPwAk\n" +
+            //   "oaXs4pwfiLZZ5jdW8hbBgLyyIQmWdDLURG7Wp1O2K5e6wCVSMP7N7jTUXHDmfN5o\n" +
+            //   "+2RTe9i0dhQgE3HuUTTqGnwkdDUM2SxYM4uxABEBAAG0InRlc3QgKHNpbXBsZS1z\n" +
+            //   "YWxlKSA8ZnVja0BudWMuc2hpdD6JAU4EEwEIADgWIQRz7nzBtIm/nMMiGu/uaCQQ\n" +
+            //   "VTA10QUCX7iwqwIbLwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRDuaCQQVTA1\n" +
+            //   "0dWpB/9Vc1OK9zfwtRznNLIZJgVOpm/17uuVDgqvxNSsgw4Zemtd3KXmTPagYyED\n" +
+            //   "nmjxa6I8Kgy6pZcHz4x6FNMhDERIFuqSIAaHUcw6JYkccPzmSbBCvjHg8Itl4Ztr\n" +
+            //   "1i/jpRjVp7Air+AnrgLAKoAp+KT1j7cKhu68nwbhX464IblHHDbudCxg1za1FXre\n" +
+            //   "wTNqi/Pn4QXBbtZSJUu7/hhAJE5IjWnYELbSU06bbypT4UpaxnzRsP6BYSeF3id7\n" +
+            //   "6Q5TUWsbplwXPwXY0wbo0y5xdV8T9Ml45CXi34hgWI3VALyFkckdK3mv32o7K4jp\n" +
+            //   "1vSTQByZ0JZUQJLAaeOVj0HFcwF7\n" +
+            //   "=C0bL\n" +
+            //   "-----END PGP PUBLIC KEY BLOCK-----"
           )
         ).keys // for verification
       })
