@@ -351,9 +351,7 @@ export default class Order extends Vue {
   }
 
   async RefreshOrder() {
-    this.tableData = (await api.get(
-      "customer/agentOrders"
-    )) as OrderInfoValue[];
+    this.tableData = (await api.get("customer/Orders")) as OrderInfoValue[];
     this.pagetotal = this.tableData.length;
     this.search = "";
   }

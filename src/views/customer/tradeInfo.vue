@@ -364,12 +364,12 @@ export default class Order extends Vue {
       );
 
       // this.signCheckResult = Array(this.agentOrderGoods.length);
-      for (const goods of OrderGoods) {
-        this.publicKey = await api.get(
-          `customer/customer_goodsSign_find/${goods.goodsId}`
-        );
-        await this.checkSign(goods);
-      }
+      // for (const goods of OrderGoods) {
+      //   this.publicKey = await api.get(
+      //     `customer/customer_goodsSign_find/${goods.goodsId}`
+      //   );
+      //   await this.checkSign(goods);
+      // }
       this.OrdertableData = OrderGoods;
       this.dialogOrderVisible = true;
       let signValid = true;
@@ -377,27 +377,27 @@ export default class Order extends Vue {
       this.allSignVerified = signValid;
     }
   }
-  async checkSign(row: GoodsValue) {
-    const goods: GoodsValue = {
-      stockId: row.stockId,
-      goodsId: row.goodsId,
-      productionDate: row.productionDate,
-      parameters: row.parameters,
-      price: row.price,
-      sign: ""
-    };
-    const GoodsPubileKey: string = await api.get(
-      `customer/goodsCheck/${row.goodsId}`
-    );
-    console.log(GoodsPubileKey);
-    row.signValid = (
-      await verify({
-        message: cleartext.fromText(JSON.stringify(goods)), // CleartextMessage or Message object
-        signature: await signature.readArmored(row.sign), // parse detached signature
-        publicKeys: (await key.readArmored(this.publicKey)).keys // for verification
-      })
-    ).signatures[0].valid;
-  }
+  // async checkSign(row: GoodsValue) {
+  //   const goods: GoodsValue = {
+  //     stockId: row.stockId,
+  //     goodsId: row.goodsId,
+  //     productionDate: row.productionDate,
+  //     parameters: row.parameters,
+  //     price: row.price,
+  //     sign: ""
+  //   };
+  //   const GoodsPubileKey: string = await api.get(
+  //     `customer/goodsCheck/${row.goodsId}`
+  //   );
+  //   console.log(GoodsPubileKey);
+  //   row.signValid = (
+  //     await verify({
+  //       message: cleartext.fromText(JSON.stringify(goods)), // CleartextMessage or Message object
+  //       signature: await signature.readArmored(row.sign), // parse detached signature
+  //       publicKeys: (await key.readArmored(this.publicKey)).keys // for verification
+  //     })
+  //   ).signatures[0].valid;
+  // }
 
   async RefreshOrder() {
     this.tableData = (await api.get("customer/Orders")) as OrderInfoValue[];
